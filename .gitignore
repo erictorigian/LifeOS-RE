@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Django
+*.sqlite3
+
+# Environment
+.env
+
+# Supabase local data
+supabase/.temp/
+supabase/.branches/
+
+# macOS
+.DS_Store
