@@ -8,14 +8,29 @@ import uuid
 class Block(models.Model):
     id = models.BigAutoField(primary_key=True)
     user_id = models.UUIDField()
-    vision_id = models.BigIntegerField(null=True, blank=True)
 
-    # the main content of the block (3–5 second moment)
+    # New: explicit FKs instead of loose IDs
+    vision = models.ForeignKey(
+        'visions.Vision',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='blocks'
+    )
+
+    timeline = models.ForeignKey(
+        'visions.Timeline',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='blocks'
+    )
+
+    # main content (your 3–5 second moment)
     content = models.JSONField()
 
     created_at = models.DateTimeField(default=timezone.now)
 
-    # chain references
     prev_block = models.ForeignKey(
         "self", null=True, blank=True, related_name="next_blocks", on_delete=models.SET_NULL
     )
@@ -23,17 +38,15 @@ class Block(models.Model):
         "self", null=True, blank=True, related_name="prev_blocks", on_delete=models.SET_NULL
     )
 
-    # cryptographic chain
     hash = models.TextField(null=True, blank=True)
     prev_hash = models.TextField(null=True, blank=True)
 
-    # timeline branch ID
-    timeline_id = models.UUIDField(default=uuid.uuid4)
+    # timeline_id column is now represented by the FK 'timeline'
+    # if you want a branch ID separate from Timeline, we can reintroduce later
+    # for now, Timeline IS the branch identifier.
+    # timeline_id = models.UUIDField(default=uuid.uuid4)  # <-- remove this line
 
     def compute_hash(self):
-        """
-        Compute a SHA-256 hash of the content + timestamp + prev_hash.
-        """
         block_string = json.dumps({
             "id": self.id,
             "user_id": str(self.user_id),
@@ -45,15 +58,13 @@ class Block(models.Model):
         return hashlib.sha256(block_string.encode()).hexdigest()
 
     def save(self, *args, **kwargs):
-        # handle hashing logic
         if self.prev_block:
             self.prev_hash = self.prev_block.hash
 
-        # compute new hash
         new_hash = self.compute_hash()
         self.hash = new_hash
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Block {self.id} (timeline {self.timeline_id})"
+        return f"Block {self.id} (user {self.user_id})"
