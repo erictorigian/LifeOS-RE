@@ -8,6 +8,7 @@ urlpatterns = [
     path("api/", include("blocks.urls")),
     path("api/", include("visions.urls")),
     path("crm/", include("crm.urls")),
+    path("accounts/", include("accounts.urls")),
     path("", include("ui.urls")),
 ]
 

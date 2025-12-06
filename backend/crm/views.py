@@ -1,21 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 import uuid
-from backend.auth_utils import get_user_id_from_session
 from .models import Contact, Deal, Interaction
 from .forms import ContactForm, DealForm, InteractionForm
 
 
+@login_required
 def contact_list(request):
     """List all contacts"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     contacts = Contact.objects.filter(user_id=user_id)
     return render(request, 'crm/contact_list.html', {'contacts': contacts})
 
 
+@login_required
 def contact_create(request):
     """Create a new contact"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -29,9 +31,10 @@ def contact_create(request):
     return render(request, 'crm/contact_form.html', {'form': form, 'title': 'Create Contact'})
 
 
+@login_required
 def contact_update(request, pk):
     """Update an existing contact"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     contact = get_object_or_404(Contact, pk=pk, user_id=user_id)
     if request.method == 'POST':
         form = ContactForm(request.POST, instance=contact)
@@ -46,9 +49,10 @@ def contact_update(request, pk):
     return render(request, 'crm/contact_form.html', {'form': form, 'contact': contact, 'title': 'Update Contact'})
 
 
+@login_required
 def contact_delete(request, pk):
     """Delete a contact"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     contact = get_object_or_404(Contact, pk=pk, user_id=user_id)
     if request.method == 'POST':
         contact.delete()
@@ -57,16 +61,18 @@ def contact_delete(request, pk):
     return render(request, 'crm/contact_confirm_delete.html', {'contact': contact})
 
 
+@login_required
 def deal_list(request):
     """List all deals"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     deals = Deal.objects.select_related('contact').filter(user_id=user_id)
     return render(request, 'crm/deal_list.html', {'deals': deals})
 
 
+@login_required
 def deal_create(request):
     """Create a new deal"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     if request.method == 'POST':
         form = DealForm(request.POST)
         if form.is_valid():
@@ -82,9 +88,10 @@ def deal_create(request):
     return render(request, 'crm/deal_form.html', {'form': form, 'title': 'Create Deal'})
 
 
+@login_required
 def deal_update(request, pk):
     """Update an existing deal"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     deal = get_object_or_404(Deal, pk=pk, user_id=user_id)
     if request.method == 'POST':
         form = DealForm(request.POST, instance=deal)
@@ -101,9 +108,10 @@ def deal_update(request, pk):
     return render(request, 'crm/deal_form.html', {'form': form, 'deal': deal, 'title': 'Update Deal'})
 
 
+@login_required
 def deal_delete(request, pk):
     """Delete a deal"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     deal = get_object_or_404(Deal, pk=pk, user_id=user_id)
     if request.method == 'POST':
         deal.delete()
@@ -112,16 +120,18 @@ def deal_delete(request, pk):
     return render(request, 'crm/deal_confirm_delete.html', {'deal': deal})
 
 
+@login_required
 def interaction_list(request):
     """List all interactions"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     interactions = Interaction.objects.select_related('contact').filter(user_id=user_id)
     return render(request, 'crm/interaction_list.html', {'interactions': interactions})
 
 
+@login_required
 def interaction_create(request):
     """Create a new interaction"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     if request.method == 'POST':
         form = InteractionForm(request.POST)
         if form.is_valid():
@@ -137,9 +147,10 @@ def interaction_create(request):
     return render(request, 'crm/interaction_form.html', {'form': form, 'title': 'Create Interaction'})
 
 
+@login_required
 def interaction_update(request, pk):
     """Update an existing interaction"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     interaction = get_object_or_404(Interaction, pk=pk, user_id=user_id)
     if request.method == 'POST':
         form = InteractionForm(request.POST, instance=interaction)
@@ -156,9 +167,10 @@ def interaction_update(request, pk):
     return render(request, 'crm/interaction_form.html', {'form': form, 'interaction': interaction, 'title': 'Update Interaction'})
 
 
+@login_required
 def interaction_delete(request, pk):
     """Delete an interaction"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     interaction = get_object_or_404(Interaction, pk=pk, user_id=user_id)
     if request.method == 'POST':
         interaction.delete()
@@ -167,9 +179,10 @@ def interaction_delete(request, pk):
     return render(request, 'crm/interaction_confirm_delete.html', {'interaction': interaction})
 
 
+@login_required
 def dashboard(request):
     """CRM Dashboard"""
-    user_id = get_user_id_from_session(request)
+    user_id = request.user.id
     contacts_count = Contact.objects.filter(user_id=user_id).count()
     deals_count = Deal.objects.filter(user_id=user_id).count()
     interactions_count = Interaction.objects.filter(user_id=user_id).count()
