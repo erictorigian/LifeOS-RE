@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'backend.context_processors.user_context',
             ],
         },
     },
@@ -141,3 +142,8 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Supabase Configuration
+SUPABASE_URL = 'https://wkxedsjdkkczreprjsvc.supabase.co'
+# TODO: Add SUPABASE_ANON_KEY to environment variables
+# SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', '')
