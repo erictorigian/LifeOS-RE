@@ -1,0 +1,67 @@
+{% extends "ui/base.html" %}
+{% block title %}Deals{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-3xl font-bold">Deals</h1>
+    <a href="{% url 'crm:deal_create' %}" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">+ New Deal</a>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md">
+        {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stage</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Probability</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Close</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for deal in deals %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{ deal.contact.company }}</div>
+                    <div class="text-sm text-gray-500">{{ deal.contact.contact_name }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ deal.service|default:"—" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {{ deal.deal_stage }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:2 }}{% else %}—{% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ deal.probability_pct }}%</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ deal.expected_close_date|default:"—" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <a href="{% url 'crm:deal_update' deal.id %}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                    <a href="{% url 'crm:deal_delete' deal.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="px-6 py-4 text-center text-gray-500">No deals found. <a href="{% url 'crm:deal_create' %}" class="text-blue-600">Create one</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'crm:dashboard' %}" class="text-blue-600 hover:text-blue-800">← Back to Dashboard</a>
+</div>
+{% endblock %}
+

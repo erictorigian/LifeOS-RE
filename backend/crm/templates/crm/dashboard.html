@@ -1,0 +1,114 @@
+{% extends "ui/base.html" %}
+{% block title %}CRM Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">CRM Dashboard</h1>
+    <p class="text-gray-600">Manage your contacts, deals, and interactions</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-sm text-gray-500 mb-1">Total Contacts</div>
+        <div class="text-3xl font-bold text-blue-600">{{ contacts_count }}</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-sm text-gray-500 mb-1">Total Deals</div>
+        <div class="text-3xl font-bold text-green-600">{{ deals_count }}</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-sm text-gray-500 mb-1">Total Interactions</div>
+        <div class="text-3xl font-bold text-purple-600">{{ interactions_count }}</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mb-8">
+    <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'crm:contact_create' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">+ New Contact</a>
+        <a href="{% url 'crm:deal_create' %}" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">+ New Deal</a>
+        <a href="{% url 'crm:interaction_create' %}" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition">+ New Interaction</a>
+    </div>
+</div>
+
+<!-- Recent Items -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Recent Contacts -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-4 border-b">
+            <h3 class="font-semibold">Recent Contacts</h3>
+        </div>
+        <div class="p-4">
+            {% if recent_contacts %}
+                <ul class="space-y-2">
+                    {% for contact in recent_contacts %}
+                    <li class="flex justify-between items-center">
+                        <div>
+                            <div class="font-medium">{{ contact.contact_name }}</div>
+                            <div class="text-sm text-gray-500">{{ contact.company }}</div>
+                        </div>
+                        <a href="{% url 'crm:contact_update' contact.id %}" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-sm">No contacts yet</p>
+            {% endif %}
+            <a href="{% url 'crm:contact_list' %}" class="text-blue-600 hover:text-blue-800 text-sm mt-4 inline-block">View all →</a>
+        </div>
+    </div>
+
+    <!-- Recent Deals -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-4 border-b">
+            <h3 class="font-semibold">Recent Deals</h3>
+        </div>
+        <div class="p-4">
+            {% if recent_deals %}
+                <ul class="space-y-2">
+                    {% for deal in recent_deals %}
+                    <li class="flex justify-between items-center">
+                        <div>
+                            <div class="font-medium">{{ deal.contact.company }}</div>
+                            <div class="text-sm text-gray-500">{{ deal.deal_stage }}</div>
+                        </div>
+                        <a href="{% url 'crm:deal_update' deal.id %}" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-sm">No deals yet</p>
+            {% endif %}
+            <a href="{% url 'crm:deal_list' %}" class="text-blue-600 hover:text-blue-800 text-sm mt-4 inline-block">View all →</a>
+        </div>
+    </div>
+
+    <!-- Recent Interactions -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-4 border-b">
+            <h3 class="font-semibold">Recent Interactions</h3>
+        </div>
+        <div class="p-4">
+            {% if recent_interactions %}
+                <ul class="space-y-2">
+                    {% for interaction in recent_interactions %}
+                    <li class="flex justify-between items-center">
+                        <div>
+                            <div class="font-medium">{{ interaction.contact.contact_name }}</div>
+                            <div class="text-sm text-gray-500">{{ interaction.interaction_type }}</div>
+                        </div>
+                        <a href="{% url 'crm:interaction_update' interaction.id %}" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-sm">No interactions yet</p>
+            {% endif %}
+            <a href="{% url 'crm:interaction_list' %}" class="text-blue-600 hover:text-blue-800 text-sm mt-4 inline-block">View all →</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
