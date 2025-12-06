@@ -21,12 +21,15 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             
             if user is not None:
-                login(request, user)
-                messages.success(request, f'Welcome back, {user.get_full_name() or user.username}!')
-                next_url = request.GET.get('next', 'crm:dashboard')
-                return redirect(next_url)
+                if user.is_active:
+                    login(request, user)
+                    messages.success(request, f'Welcome back, {user.get_full_name() or user.username}!')
+                    next_url = request.GET.get('next', 'crm:dashboard')
+                    return redirect(next_url)
+                else:
+                    messages.error(request, 'Your account is inactive. Please contact support.')
             else:
-                messages.error(request, 'Invalid email or password.')
+                messages.error(request, 'Invalid username or password.')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:

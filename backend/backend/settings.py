@@ -145,6 +145,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
+# Custom Authentication Backend
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.AccountsUserBackend',  # Custom backend for accounts_user
+    'django.contrib.auth.backends.ModelBackend',  # Default backend as fallback
+]
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Supabase Configuration
