@@ -8,10 +8,10 @@ from .models import User
 
 class LoginForm(forms.Form):
     """Login form"""
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
             'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-            'placeholder': 'Email address'
+            'placeholder': 'Username'
         })
     )
     password = forms.CharField(
@@ -24,10 +24,17 @@ class LoginForm(forms.Form):
 
 class SignUpForm(UserCreationForm):
     """Sign up form"""
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'Username'
+        })
+    )
     email = forms.EmailField(
+        required=False,
         widget=forms.EmailInput(attrs={
             'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-            'placeholder': 'Email address'
+            'placeholder': 'Email address (optional)'
         })
     )
     first_name = forms.CharField(
@@ -49,7 +56,7 @@ class SignUpForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
