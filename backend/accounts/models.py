@@ -43,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.CharField(max_length=255, blank=True, null=True)
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
-    password = models.CharField(max_length=128)  # Django will handle this via AbstractBaseUser
+    # password is handled by AbstractBaseUser
     
     # Django auth fields
     is_active = models.BooleanField(default=True)
@@ -69,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email'] if email else []
+    REQUIRED_FIELDS = []  # Email is optional
     
     class Meta:
         db_table = 'accounts_user'
