@@ -2,7 +2,7 @@
 Django authentication views for login/logout/signup.
 """
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import LoginForm, SignUpForm
@@ -16,9 +16,26 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
+            username_or_email = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
+            
+            # Try to find user by username or email
+            User = get_user_model()
+            try:
+                # Try username first
+                user = User.objects.get(username=username_or_email)
+            except User.DoesNotExist:
+                try:
+                    # Try email
+                    user = User.objects.get(email=username_or_email)
+                except User.DoesNotExist:
+                    user = None
+            
+            # Authenticate with the found user
+            if user:
+                user = authenticate(request, username=user.username, password=password)
+            else:
+                user = None
             
             if user is not None:
                 if user.is_active:
