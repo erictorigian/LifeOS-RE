@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 import uuid
 
 
@@ -61,7 +62,7 @@ class Interaction(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='interactions')
     interaction_type = models.TextField()
-    interaction_date = models.DateTimeField(auto_now_add=True)
+    interaction_date = models.DateTimeField(default=timezone.now)
     direction = models.TextField(choices=[('inbound', 'Inbound'), ('outbound', 'Outbound')], blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     outcome = models.TextField(blank=True, null=True)
