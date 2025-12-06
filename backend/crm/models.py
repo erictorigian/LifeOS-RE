@@ -6,6 +6,7 @@ import uuid
 class Contact(models.Model):
     """CRM Contact model matching crm_contacts table"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.UUIDField()
     company = models.TextField()
     contact_name = models.TextField()
     role = models.TextField(blank=True, null=True)
@@ -30,6 +31,7 @@ class Contact(models.Model):
 class Deal(models.Model):
     """CRM Deal model matching crm_deals table"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.UUIDField()
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='deals')
     engagement = models.TextField(blank=True, null=True)
     service = models.TextField(blank=True, null=True)
@@ -60,6 +62,7 @@ class Deal(models.Model):
 class Interaction(models.Model):
     """CRM Interaction model matching crm_interactions table"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.UUIDField()
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='interactions')
     interaction_type = models.TextField()
     interaction_date = models.DateTimeField(default=timezone.now)
@@ -78,6 +81,7 @@ class Interaction(models.Model):
 class NextAction(models.Model):
     """CRM Next Action model matching crm_next_actions table"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.UUIDField()
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='next_actions')
     deal = models.ForeignKey(Deal, on_delete=models.SET_NULL, blank=True, null=True, related_name='next_actions')
     action = models.TextField()
