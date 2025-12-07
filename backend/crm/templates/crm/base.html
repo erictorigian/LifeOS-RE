@@ -129,10 +129,10 @@
         <!-- Sidebar -->
         <div class="sidebar" style="width: 240px; display: flex; flex-direction: column; padding: 24px 16px;">
             <!-- Logo -->
-            <div style="margin-bottom: 32px;">
-                <h1 style="margin: 0; font-size: 20px; font-weight: bold; color: #f1f5f9;">LifeOS</h1>
+            <a href="{% url 'ui:landing' %}" style="text-decoration: none; margin-bottom: 32px; display: block;">
+                <h1 style="margin: 0; font-size: 20px; font-weight: bold; color: #f1f5f9; cursor: pointer; transition: color 0.2s;">LifeOS</h1>
                 <p style="margin: 8px 0 0 0; font-size: 13px; color: #94a3b8;">{{ user.get_full_name|default:user.username }}</p>
-            </div>
+            </a>
 
             <!-- Navigation -->
             <nav style="flex: 1;">
