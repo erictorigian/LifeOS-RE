@@ -2,74 +2,115 @@
 {% block title %}{{ title }} - CRM{% endblock %}
 
 {% block content %}
-<div class="mb-6">
-    <h1 class="text-2xl font-semibold text-white">{{ title }}</h1>
+<!-- Header -->
+<div style="margin-bottom: 40px;">
+    <h2 style="margin: 0 0 8px 0; font-size: 28px; font-weight: bold; color: #f1f5f9;">{{ title }}</h2>
+    <p style="margin: 0; font-size: 14px; color: #94a3b8;">Enter contact details below</p>
 </div>
 
-<div class="bg-slate-800 border border-slate-700 rounded-lg shadow-sm p-8">
-    <form method="post" class="space-y-6">
+<!-- Form Card -->
+<div class="card" style="border-radius: 8px; padding: 32px; max-width: 900px;">
+    <form method="post">
         {% csrf_token %}
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Row 1: Company & Contact Name -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Company *</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Company *</label>
                 {{ form.company }}
                 {% if form.company.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ form.company.errors.0 }}</p>
+                    <p style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.company.errors.0 }}</p>
                 {% endif %}
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Contact Name *</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Contact Name *</label>
                 {{ form.contact_name }}
                 {% if form.contact_name.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ form.contact_name.errors.0 }}</p>
+                    <p style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.contact_name.errors.0 }}</p>
                 {% endif %}
             </div>
-            
+        </div>
+
+        <!-- Row 2: Role & Email -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Role</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Role</label>
                 {{ form.role }}
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Email</label>
                 {{ form.email }}
                 {% if form.email.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                    <p style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.email.errors.0 }}</p>
                 {% endif %}
             </div>
-            
+        </div>
+
+        <!-- Row 3: Phone & Source -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Phone</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Phone</label>
                 {{ form.phone }}
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Source</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Source</label>
                 {{ form.source }}
             </div>
-            
+        </div>
+
+        <!-- Row 4: Priority & Status -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Priority</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Priority</label>
                 {{ form.priority }}
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Status</label>
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Status</label>
                 {{ form.status }}
             </div>
         </div>
-        
-        <div>
-            <label class="block text-sm font-medium text-gray-300 mb-1">Notes</label>
+
+        <!-- Notes -->
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Notes</label>
             {{ form.notes }}
         </div>
-        
-        <div class="flex gap-3 pt-4">
-            <button type="submit" class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-amber-500/30 transition-colors">Save</button>
-            <a href="{% url 'crm:contact_list' %}" class="bg-slate-700 text-gray-300 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-600 transition-colors">Cancel</a>
+
+        <!-- Buttons -->
+        <div style="display: flex; gap: 12px; padding-top: 16px; border-top: 1px solid #334155;">
+            <button type="submit" style="background-color: #f59e0b; color: #000; padding: 12px 24px; border-radius: 6px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">Save Contact</button>
+            <a href="{% url 'crm:contact_list' %}" style="background-color: #334155; color: #cbd5e1; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center;">Cancel</a>
         </div>
     </form>
 </div>
+
+<style>
+    .card select, .card input[type="text"], .card input[type="email"], .card input[type="number"], .card input[type="date"], .card input[type="datetime-local"], .card textarea {
+        width: 100%;
+        padding: 10px 12px;
+        background-color: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        color: #f1f5f9;
+        font-size: 14px;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    
+    .card select:focus, .card input[type="text"]:focus, .card input[type="email"]:focus, .card input[type="number"]:focus, .card input[type="date"]:focus, .card input[type="datetime-local"]:focus, .card textarea:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    }
+    
+    .card textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+</style>
+
 {% endblock %}
