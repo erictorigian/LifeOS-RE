@@ -1,152 +1,100 @@
 {% extends "crm/base.html" %}
 {% block title %}Dashboard - CRM{% endblock %}
 
-{% block extra_css %}
-<style>
-    .slide-over {
-        transform: translateX(100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .slide-over.open {
-        transform: translateX(0);
-    }
-    .row-hover {
-        transition: all 0.2s ease;
-    }
-    .row-hover:hover {
-        background-color: rgba(51, 65, 85, 0.4);
-        transform: translateY(-1px);
-    }
-    .kpi-card {
-        position: relative;
-        overflow: hidden;
-    }
-    .kpi-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(251, 146, 60, 0) 0%, rgba(251, 146, 60, 0.05) 100%);
-        pointer-events: none;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<!-- Page Title -->
-<div class="mb-8">
-    <h1 class="text-3xl font-bold text-white tracking-tight mb-2">Dashboard</h1>
-    <p class="text-gray-300">Your sales empire at a glance</p>
+<!-- Header -->
+<div style="margin-bottom: 40px;">
+    <h2 style="margin: 0 0 8px 0; font-size: 28px; font-weight: bold; color: #f1f5f9;">Dashboard</h2>
+    <p style="margin: 0; font-size: 14px; color: #94a3b8;">Your sales empire at a glance</p>
 </div>
 
-<!-- KPI Summary Cards - Premium -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <div class="kpi-card bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-amber-500 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/20">
-        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Revenue MTD</div>
-        <div class="text-3xl font-bold text-white mb-2">${{ revenue_mtd|floatformat:0|default:"0" }}</div>
-        <div class="text-xs text-gray-500">This month's closed deals</div>
+<!-- KPI Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 40px;">
+    <div class="card" style="padding: 24px; border-radius: 8px;">
+        <div class="kpi-label">Revenue MTD</div>
+        <div class="kpi-value">${{ revenue_mtd|floatformat:0|default:"0" }}</div>
+        <div class="kpi-sub">This month's closed deals</div>
     </div>
     
-    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
-        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Weighted Pipeline</div>
-        <div class="text-3xl font-bold text-white mb-2">${{ weighted_pipeline|floatformat:0|default:"0" }}</div>
-        <div class="text-xs text-gray-500">Probability-weighted value</div>
+    <div class="card" style="padding: 24px; border-radius: 8px;">
+        <div class="kpi-label">Weighted Pipeline</div>
+        <div class="kpi-value">${{ weighted_pipeline|floatformat:0|default:"0" }}</div>
+        <div class="kpi-sub">Probability-weighted value</div>
     </div>
     
-    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
-        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Closing This Week</div>
-        <div class="text-3xl font-bold text-white mb-2">{{ deals_closing_this_week }}</div>
-        <div class="text-xs text-gray-500">Deals to close soon</div>
+    <div class="card" style="padding: 24px; border-radius: 8px;">
+        <div class="kpi-label">Closing This Week</div>
+        <div class="kpi-value">{{ deals_closing_this_week }}</div>
+        <div class="kpi-sub">Deals to close soon</div>
     </div>
     
-    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
-        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Avg Deal Size</div>
-        <div class="text-3xl font-bold text-white mb-2">${{ avg_deal_size|floatformat:0|default:"0" }}</div>
-        <div class="text-xs text-gray-500">Average deal value</div>
+    <div class="card" style="padding: 24px; border-radius: 8px;">
+        <div class="kpi-label">Avg Deal Size</div>
+        <div class="kpi-value">${{ avg_deal_size|floatformat:0|default:"0" }}</div>
+        <div class="kpi-sub">Average deal value</div>
     </div>
 </div>
 
-<!-- Active Deals Table -->
-<div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden shadow-xl">
-    <div class="px-6 py-5 border-b border-gray-700 bg-gray-800">
-        <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-white">Active Deals</h2>
-            <span class="text-xs font-medium text-gray-400">{{ deals|length }} deal{{ deals|length|pluralize }}</span>
-        </div>
+<!-- Deals Table -->
+<div class="card" style="border-radius: 8px; overflow: hidden;">
+    <div style="padding: 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #f1f5f9;">Active Deals</h3>
+        <span style="font-size: 12px; color: #94a3b8;">{{ deals|length }} deal{{ deals|length|pluralize }}</span>
     </div>
     
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-700">
-            <thead class="bg-gray-800">
-                <tr>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Company</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Value</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Stage</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Next Action</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Due</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Probability</th>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid #334155;">
+                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Company</th>
+                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Value</th>
+                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Stage</th>
+                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Next Action</th>
+                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Due</th>
+                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Owner</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700">
+            <tbody>
                 {% for deal in deals %}
-                <tr class="row-hover cursor-pointer group" onclick="openSlideOver('{{ deal.id }}')">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-white">{{ deal.contact.company }}</div>
-                        <div class="text-xs text-gray-400">{{ deal.contact.contact_name }}</div>
+                <tr class="table-row" style="border-bottom: 1px solid #334155; cursor: pointer;" onclick="openSlideOver('{{ deal.id }}')">
+                    <td style="padding: 16px; font-size: 14px; color: #f1f5f9;">
+                        <div style="font-weight: 500;">{{ deal.contact.company }}</div>
+                        <div style="font-size: 12px; color: #94a3b8;">{{ deal.contact.contact_name }}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-bold text-amber-400">
-                            {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
-                        </div>
+                    <td style="padding: 16px; font-size: 14px; font-weight: 600; color: #f59e0b;">
+                        {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-3 py-1 text-xs font-semibold rounded-full
-                            {% if deal.deal_stage == 'Closed Won' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
-                            {% elif deal.deal_stage == 'Negotiation' %}bg-amber-500/20 text-amber-400 border border-amber-500/30
-                            {% elif deal.deal_stage == 'Proposal' %}bg-blue-500/20 text-blue-400 border border-blue-500/30
-                            {% elif deal.deal_stage == 'Qualified' %}bg-purple-500/20 text-purple-400 border border-purple-500/30
-                            {% else %}bg-slate-700/50 text-gray-300 border border-slate-600{% endif %}">
-                            {{ deal.deal_stage }}
-                        </span>
+                    <td style="padding: 16px;">
+                        {% if deal.deal_stage == 'Closed Won' %}
+                            <span class="badge badge-green">{{ deal.deal_stage }}</span>
+                        {% elif deal.deal_stage == 'Negotiation' %}
+                            <span class="badge badge-amber">{{ deal.deal_stage }}</span>
+                        {% elif deal.deal_stage == 'Proposal' %}
+                            <span class="badge badge-amber">{{ deal.deal_stage }}</span>
+                        {% else %}
+                            <span class="badge" style="background-color: rgba(148, 163, 184, 0.2); color: #cbd5e1;">{{ deal.deal_stage }}</span>
+                        {% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-300">{{ deal.next_action|default:"—"|truncatewords:4 }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td style="padding: 16px; font-size: 14px; color: #cbd5e1;">{{ deal.next_action|default:"—"|truncatewords:4 }}</td>
+                    <td style="padding: 16px; font-size: 14px;">
                         {% if deal.next_action_due %}
                             {% now "Y-m-d" as today_str %}
                             {% if deal.next_action_due|date:"Y-m-d" < today_str %}
-                                <span class="px-2 py-1 text-xs font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
-                                    {{ deal.next_action_due|date:"M d" }} 🔥
-                                </span>
+                                <span class="badge badge-red">{{ deal.next_action_due|date:"M d" }} 🔥</span>
                             {% else %}
-                                <span class="text-sm text-gray-300 font-medium">{{ deal.next_action_due|date:"M d" }}</span>
+                                <span style="color: #cbd5e1;">{{ deal.next_action_due|date:"M d, Y" }}</span>
                             {% endif %}
                         {% else %}
-                            <span class="text-sm text-gray-500">—</span>
+                            <span style="color: #94a3b8;">—</span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="w-12 h-1.5 bg-slate-700 rounded-full overflow-hidden mr-2">
-                                <div class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full" style="width: {{ deal.probability_pct }}%"></div>
-                            </div>
-                            <span class="text-sm font-semibold text-white">{{ deal.probability_pct }}%</span>
-                        </div>
-                    </td>
+                    <td style="padding: 16px; font-size: 14px; color: #f1f5f9;">You</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center">
-                        <div class="text-gray-400 mb-4">
-                            <p class="text-lg mb-2">No deals yet</p>
-                            <p class="text-sm">Build your empire — create your first deal</p>
-                        </div>
-                        <a href="{% url 'crm:deal_create' %}" class="inline-block bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-200">
-                            Create Deal
-                        </a>
+                    <td colspan="6" style="padding: 40px; text-align: center; color: #94a3b8;">
+                        <p style="margin: 0 0 16px 0;">No deals found. Create your first deal to start building your empire.</p>
+                        <a href="{% url 'crm:deal_create' %}" style="background-color: #f59e0b; color: #000; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500; font-size: 14px; display: inline-block;">Create Deal</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -155,97 +103,4 @@
     </div>
 </div>
 
-<!-- Slide-Over Detail Panel -->
-<div id="slideOver" class="slide-over fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 border-l border-gray-700 z-50 overflow-y-auto shadow-2xl">
-    <div class="p-6 space-y-6">
-        <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold text-white">Deal Details</h3>
-            <button onclick="closeSlideOver()" class="p-2 hover:bg-slate-700/50 rounded-lg text-gray-400 hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-        <div id="slideOverContent" class="space-y-5">
-            <!-- Content will be loaded here -->
-        </div>
-    </div>
-</div>
-
-<!-- Overlay -->
-<div id="overlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onclick="closeSlideOver()"></div>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    function openSlideOver(dealId) {
-        fetch(`/crm/deals/${dealId}/detail/`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('slideOverContent').innerHTML = `
-                    <div class="space-y-4">
-                        <div class="border-b border-slate-700 pb-4">
-                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Company</div>
-                            <div class="text-2xl font-bold text-white">${data.company}</div>
-                            <div class="text-sm text-gray-400 mt-1">${data.contact_name}</div>
-                        </div>
-                        
-                        <div class="border-b border-slate-700 pb-4">
-                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Deal Value</div>
-                            <div class="text-2xl font-bold text-amber-400">${data.deal_value || '—'}</div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 border-b border-slate-700 pb-4">
-                            <div>
-                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Stage</div>
-                                <div class="text-sm font-semibold text-white">${data.stage}</div>
-                            </div>
-                            <div>
-                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Probability</div>
-                                <div class="text-sm font-semibold text-white">${data.probability}%</div>
-                            </div>
-                        </div>
-                        
-                        <div class="border-b border-slate-700 pb-4">
-                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Expected Close</div>
-                            <div class="text-sm text-gray-300">${data.expected_close || '—'}</div>
-                        </div>
-                        
-                        <div class="border-b border-slate-700 pb-4">
-                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Next Action</div>
-                            <div class="text-sm text-gray-300">${data.next_action || '—'}</div>
-                            ${data.next_action_due ? `<div class="text-xs text-gray-500 mt-2">Due: ${data.next_action_due}</div>` : ''}
-                        </div>
-                        
-                        ${data.service ? `<div class="border-b border-slate-700 pb-4">
-                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Service</div>
-                            <div class="text-sm text-gray-300">${data.service}</div>
-                        </div>` : ''}
-                        
-                        ${data.notes ? `<div>
-                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Notes</div>
-                            <div class="text-sm text-gray-300">${data.notes}</div>
-                        </div>` : ''}
-                        
-                        <div class="pt-2 flex gap-2">
-                            <a href="/crm/deals/${dealId}/update/" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/30 text-center transition-all duration-200">Edit</a>
-                            <a href="/crm/deals/${dealId}/delete/" class="flex-1 bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-500/30 text-center transition-all duration-200">Delete</a>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('slideOver').classList.add('open');
-                document.getElementById('overlay').classList.remove('hidden');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                window.location.href = `/crm/deals/${dealId}/update/`;
-            });
-    }
-    
-    function closeSlideOver() {
-        document.getElementById('slideOver').classList.remove('open');
-        document.getElementById('overlay').classList.add('hidden');
-    }
-</script>
 {% endblock %}
