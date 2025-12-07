@@ -38,12 +38,12 @@
 <!-- Page Title -->
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-white tracking-tight mb-2">Dashboard</h1>
-    <p class="text-gray-400">Your sales empire at a glance</p>
+    <p class="text-gray-300">Your sales empire at a glance</p>
 </div>
 
 <!-- KPI Summary Cards - Premium -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
+    <div class="kpi-card bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-amber-500 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/20">
         <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Revenue MTD</div>
         <div class="text-3xl font-bold text-white mb-2">${{ revenue_mtd|floatformat:0|default:"0" }}</div>
         <div class="text-xs text-gray-500">This month's closed deals</div>
@@ -69,8 +69,8 @@
 </div>
 
 <!-- Active Deals Table -->
-<div class="bg-gradient-to-br from-slate-800/50 to-slate-800/25 border border-slate-700 rounded-xl overflow-hidden shadow-xl">
-    <div class="px-6 py-5 border-b border-slate-700/50 bg-slate-800/30">
+<div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden shadow-xl">
+    <div class="px-6 py-5 border-b border-gray-700 bg-gray-800">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-white">Active Deals</h2>
             <span class="text-xs font-medium text-gray-400">{{ deals|length }} deal{{ deals|length|pluralize }}</span>
@@ -78,8 +78,8 @@
     </div>
     
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-slate-700/50">
-            <thead class="bg-slate-800/30">
+        <table class="min-w-full divide-y divide-gray-700">
+            <thead class="bg-gray-800">
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Company</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Value</th>
@@ -89,7 +89,7 @@
                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Probability</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-700/30">
+            <tbody class="divide-y divide-gray-700">
                 {% for deal in deals %}
                 <tr class="row-hover cursor-pointer group" onclick="openSlideOver('{{ deal.id }}')">
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -156,7 +156,7 @@
 </div>
 
 <!-- Slide-Over Detail Panel -->
-<div id="slideOver" class="slide-over fixed inset-y-0 right-0 w-full sm:w-96 bg-slate-800 border-l border-slate-700 z-50 overflow-y-auto shadow-2xl">
+<div id="slideOver" class="slide-over fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 border-l border-gray-700 z-50 overflow-y-auto shadow-2xl">
     <div class="p-6 space-y-6">
         <div class="flex items-center justify-between">
             <h3 class="text-xl font-bold text-white">Deal Details</h3>
