@@ -5,51 +5,81 @@
 <style>
     .slide-over {
         transform: translateX(100%);
-        transition: transform 0.3s ease-in-out;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .slide-over.open {
         transform: translateX(0);
     }
+    .row-hover {
+        transition: all 0.2s ease;
+    }
     .row-hover:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        background-color: rgba(51, 65, 85, 0.4);
+        transform: translateY(-1px);
+    }
+    .kpi-card {
+        position: relative;
+        overflow: hidden;
+    }
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(251, 146, 60, 0) 0%, rgba(251, 146, 60, 0.05) 100%);
+        pointer-events: none;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- KPI Summary Cards -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
-        <div class="text-sm text-gray-400 mb-1">Revenue MTD</div>
-        <div class="text-2xl font-semibold text-white">${{ revenue_mtd|floatformat:0|default:"0" }}</div>
+<!-- Page Title -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-white tracking-tight mb-2">Dashboard</h1>
+    <p class="text-gray-400">Your sales empire at a glance</p>
+</div>
+
+<!-- KPI Summary Cards - Premium -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Revenue MTD</div>
+        <div class="text-3xl font-bold text-white mb-2">${{ revenue_mtd|floatformat:0|default:"0" }}</div>
+        <div class="text-xs text-gray-500">This month's closed deals</div>
     </div>
     
-    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
-        <div class="text-sm text-gray-400 mb-1">Weighted Pipeline</div>
-        <div class="text-2xl font-semibold text-white">${{ weighted_pipeline|floatformat:0|default:"0" }}</div>
+    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Weighted Pipeline</div>
+        <div class="text-3xl font-bold text-white mb-2">${{ weighted_pipeline|floatformat:0|default:"0" }}</div>
+        <div class="text-xs text-gray-500">Probability-weighted value</div>
     </div>
     
-    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
-        <div class="text-sm text-gray-400 mb-1">Deals Closing This Week</div>
-        <div class="text-2xl font-semibold text-white">{{ deals_closing_this_week }}</div>
+    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Closing This Week</div>
+        <div class="text-3xl font-bold text-white mb-2">{{ deals_closing_this_week }}</div>
+        <div class="text-xs text-gray-500">Deals to close soon</div>
     </div>
     
-    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
-        <div class="text-sm text-gray-400 mb-1">Avg Deal Size</div>
-        <div class="text-2xl font-semibold text-white">${{ avg_deal_size|floatformat:0|default:"0" }}</div>
+    <div class="kpi-card bg-gradient-to-br from-slate-800 to-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 hover:shadow-lg transition-all duration-300 hover:shadow-amber-500/10">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Avg Deal Size</div>
+        <div class="text-3xl font-bold text-white mb-2">${{ avg_deal_size|floatformat:0|default:"0" }}</div>
+        <div class="text-xs text-gray-500">Average deal value</div>
     </div>
 </div>
 
-<!-- Deals Table -->
-<div class="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
-    <div class="px-6 py-4 border-b border-slate-700">
-        <h2 class="text-lg font-semibold text-white">Active Deals</h2>
+<!-- Active Deals Table -->
+<div class="bg-gradient-to-br from-slate-800/50 to-slate-800/25 border border-slate-700 rounded-xl overflow-hidden shadow-xl">
+    <div class="px-6 py-5 border-b border-slate-700/50 bg-slate-800/30">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-white">Active Deals</h2>
+            <span class="text-xs font-medium text-gray-400">{{ deals|length }} deal{{ deals|length|pluralize }}</span>
+        </div>
     </div>
     
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-slate-700">
-            <thead class="bg-slate-800">
+        <table class="min-w-full divide-y divide-slate-700/50">
+            <thead class="bg-slate-800/30">
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Company</th>
                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Value</th>
@@ -59,52 +89,64 @@
                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Probability</th>
                 </tr>
             </thead>
-            <tbody class="bg-slate-800 divide-y divide-slate-700">
+            <tbody class="divide-y divide-slate-700/30">
                 {% for deal in deals %}
-                <tr class="row-hover cursor-pointer transition-all" onclick="openSlideOver('{{ deal.id }}')">
+                <tr class="row-hover cursor-pointer group" onclick="openSlideOver('{{ deal.id }}')">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-white">{{ deal.contact.company }}</div>
                         <div class="text-xs text-gray-400">{{ deal.contact.contact_name }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-white">
+                        <div class="text-sm font-bold text-amber-400">
                             {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full
-                            {% if deal.deal_stage == 'Closed Won' %}bg-green-500/20 text-green-400 border border-green-500/30
+                        <span class="px-3 py-1 text-xs font-semibold rounded-full
+                            {% if deal.deal_stage == 'Closed Won' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
                             {% elif deal.deal_stage == 'Negotiation' %}bg-amber-500/20 text-amber-400 border border-amber-500/30
                             {% elif deal.deal_stage == 'Proposal' %}bg-blue-500/20 text-blue-400 border border-blue-500/30
-                            {% else %}bg-slate-700 text-gray-300 border border-slate-600{% endif %}">
+                            {% elif deal.deal_stage == 'Qualified' %}bg-purple-500/20 text-purple-400 border border-purple-500/30
+                            {% else %}bg-slate-700/50 text-gray-300 border border-slate-600{% endif %}">
                             {{ deal.deal_stage }}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-300">{{ deal.next_action|default:"—"|truncatewords:5 }}</div>
+                        <div class="text-sm text-gray-300">{{ deal.next_action|default:"—"|truncatewords:4 }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         {% if deal.next_action_due %}
                             {% now "Y-m-d" as today_str %}
                             {% if deal.next_action_due|date:"Y-m-d" < today_str %}
-                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
-                                    {{ deal.next_action_due|date:"M d" }} ⚠️
+                                <span class="px-2 py-1 text-xs font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+                                    {{ deal.next_action_due|date:"M d" }} 🔥
                                 </span>
                             {% else %}
-                                <span class="text-sm text-gray-300">{{ deal.next_action_due|date:"M d, Y" }}</span>
+                                <span class="text-sm text-gray-300 font-medium">{{ deal.next_action_due|date:"M d" }}</span>
                             {% endif %}
                         {% else %}
                             <span class="text-sm text-gray-500">—</span>
                         {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-white">{{ deal.probability_pct }}%</div>
+                        <div class="flex items-center">
+                            <div class="w-12 h-1.5 bg-slate-700 rounded-full overflow-hidden mr-2">
+                                <div class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full" style="width: {{ deal.probability_pct }}%"></div>
+                            </div>
+                            <span class="text-sm font-semibold text-white">{{ deal.probability_pct }}%</span>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">
-                        No deals found. <a href="{% url 'crm:deal_create' %}" class="text-amber-400 hover:text-amber-300">Create one</a>
+                    <td colspan="6" class="px-6 py-12 text-center">
+                        <div class="text-gray-400 mb-4">
+                            <p class="text-lg mb-2">No deals yet</p>
+                            <p class="text-sm">Build your empire — create your first deal</p>
+                        </div>
+                        <a href="{% url 'crm:deal_create' %}" class="inline-block bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-200">
+                            Create Deal
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -114,73 +156,81 @@
 </div>
 
 <!-- Slide-Over Detail Panel -->
-<div id="slideOver" class="slide-over fixed inset-y-0 right-0 w-full md:w-96 bg-slate-800 border-l border-slate-700 z-50 overflow-y-auto">
-    <div class="p-6">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-semibold text-white">Deal Details</h3>
-            <button onclick="closeSlideOver()" class="text-gray-400 hover:text-white">
+<div id="slideOver" class="slide-over fixed inset-y-0 right-0 w-full sm:w-96 bg-slate-800 border-l border-slate-700 z-50 overflow-y-auto shadow-2xl">
+    <div class="p-6 space-y-6">
+        <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white">Deal Details</h3>
+            <button onclick="closeSlideOver()" class="p-2 hover:bg-slate-700/50 rounded-lg text-gray-400 hover:text-white transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
-        <div id="slideOverContent" class="space-y-4">
+        <div id="slideOverContent" class="space-y-5">
             <!-- Content will be loaded here -->
         </div>
     </div>
 </div>
 
 <!-- Overlay -->
-<div id="overlay" class="hidden fixed inset-0 bg-black/50 z-40" onclick="closeSlideOver()"></div>
+<div id="overlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onclick="closeSlideOver()"></div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
     function openSlideOver(dealId) {
-        // Fetch deal details and populate slide-over
         fetch(`/crm/deals/${dealId}/detail/`)
             .then(response => response.json())
             .then(data => {
                 document.getElementById('slideOverContent').innerHTML = `
                     <div class="space-y-4">
-                        <div>
-                            <div class="text-sm text-gray-400 mb-1">Company</div>
-                            <div class="text-lg font-semibold text-white">${data.company}</div>
-                            <div class="text-sm text-gray-300">${data.contact_name}</div>
+                        <div class="border-b border-slate-700 pb-4">
+                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Company</div>
+                            <div class="text-2xl font-bold text-white">${data.company}</div>
+                            <div class="text-sm text-gray-400 mt-1">${data.contact_name}</div>
                         </div>
-                        <div>
-                            <div class="text-sm text-gray-400 mb-1">Deal Value</div>
-                            <div class="text-xl font-semibold text-white">${data.deal_value || '—'}</div>
+                        
+                        <div class="border-b border-slate-700 pb-4">
+                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Deal Value</div>
+                            <div class="text-2xl font-bold text-amber-400">${data.deal_value || '—'}</div>
                         </div>
-                        <div>
-                            <div class="text-sm text-gray-400 mb-1">Stage</div>
-                            <div class="text-sm font-medium text-white">${data.stage}</div>
+                        
+                        <div class="grid grid-cols-2 gap-4 border-b border-slate-700 pb-4">
+                            <div>
+                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Stage</div>
+                                <div class="text-sm font-semibold text-white">${data.stage}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Probability</div>
+                                <div class="text-sm font-semibold text-white">${data.probability}%</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-sm text-gray-400 mb-1">Probability</div>
-                            <div class="text-sm font-medium text-white">${data.probability}%</div>
+                        
+                        <div class="border-b border-slate-700 pb-4">
+                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Expected Close</div>
+                            <div class="text-sm text-gray-300">${data.expected_close || '—'}</div>
                         </div>
-                        <div>
-                            <div class="text-sm text-gray-400 mb-1">Expected Close</div>
-                            <div class="text-sm text-white">${data.expected_close || '—'}</div>
+                        
+                        <div class="border-b border-slate-700 pb-4">
+                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Next Action</div>
+                            <div class="text-sm text-gray-300">${data.next_action || '—'}</div>
+                            ${data.next_action_due ? `<div class="text-xs text-gray-500 mt-2">Due: ${data.next_action_due}</div>` : ''}
                         </div>
-                        <div>
-                            <div class="text-sm text-gray-400 mb-1">Next Action</div>
-                            <div class="text-sm text-white">${data.next_action || '—'}</div>
-                            ${data.next_action_due ? `<div class="text-xs text-gray-400 mt-1">Due: ${data.next_action_due}</div>` : ''}
-                        </div>
-                        ${data.service ? `<div>
-                            <div class="text-sm text-gray-400 mb-1">Service</div>
-                            <div class="text-sm text-white">${data.service}</div>
+                        
+                        ${data.service ? `<div class="border-b border-slate-700 pb-4">
+                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Service</div>
+                            <div class="text-sm text-gray-300">${data.service}</div>
                         </div>` : ''}
+                        
                         ${data.notes ? `<div>
-                            <div class="text-sm text-gray-400 mb-1">Notes</div>
+                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Notes</div>
                             <div class="text-sm text-gray-300">${data.notes}</div>
                         </div>` : ''}
-                        <div class="pt-4 border-t border-slate-700 flex gap-3">
-                            <a href="/crm/deals/${dealId}/update/" class="flex-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-500/30 text-center transition-colors">Edit</a>
-                            <a href="/crm/deals/${dealId}/delete/" class="flex-1 bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-500/30 text-center transition-colors">Delete</a>
+                        
+                        <div class="pt-2 flex gap-2">
+                            <a href="/crm/deals/${dealId}/update/" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/30 text-center transition-all duration-200">Edit</a>
+                            <a href="/crm/deals/${dealId}/delete/" class="flex-1 bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-500/30 text-center transition-all duration-200">Delete</a>
                         </div>
                     </div>
                 `;
@@ -189,7 +239,6 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                // Fallback: redirect to detail page
                 window.location.href = `/crm/deals/${dealId}/update/`;
             });
     }
