@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LifeOS - Reality Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1a2f4d 100%);
+            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Navigation */
+        nav {
+            background-color: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(100, 116, 139, 0.3);
+            padding: 16px 0;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f59e0b;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: #f59e0b;
+        }
+        
+        .nav-links .btn-login {
+            background-color: #f59e0b;
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            width: 100%;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: #cbd5e1;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 32px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #f59e0b;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background-color: #fbbf24;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #334155;
+            color: #f1f5f9;
+            border: 1px solid #475569;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #475569;
+            border-color: #64748b;
+        }
+        
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+        
+        .feature-card {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            border-radius: 8px;
+            padding: 32px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-card:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 20px 50px rgba(245, 158, 11, 0.1);
+            transform: translateY(-4px);
+        }
+        
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+        
+        .feature-card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #f1f5f9;
+        }
+        
+        .feature-card p {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .feature-card a {
+            color: #f59e0b;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        
+        .feature-card a:hover {
+            color: #fbbf24;
+        }
+        
+        /* Stats Section */
+        .stats {
+            background-color: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            border-radius: 8px;
+            padding: 48px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+            text-align: center;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(100, 116, 139, 0.3);
+            padding: 32px 0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            main {
+                padding: 40px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .nav-container {
+                padding: 0 20px;
+            }
+            
+            .stats {
+                padding: 32px 24px;
+                gap: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-brand">LifeOS</a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'crm:dashboard' %}">CRM</a>
+                    <a href="{% url 'ui:vision_list' %}">Visions</a>
+                    <a href="{% url 'ui:blocks_list' %}">Blocks</a>
+                    <span style="color: #94a3b8;">{{ user.get_full_name|default:user.email }}</span>
+                    <a href="{% url 'accounts:logout' %}" class="btn-login">Logout</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="{% url 'accounts:login' %}" class="btn-login">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Welcome to LifeOS</h1>
+            <p>Your reality engine for managing deals, vision, and building the future.</p>
+            <div class="hero-buttons">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'crm:dashboard' %}" class="btn btn-primary">Go to CRM</a>
+                    <a href="{% url 'ui:vision_list' %}" class="btn btn-secondary">View Visions</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary">Get Started</a>
+                    <a href="{% url 'accounts:signup' %}" class="btn btn-secondary">Create Account</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">💼</div>
+                <h3>CRM</h3>
+                <p>Manage contacts, deals, and interactions in a beautiful dark theme interface with real-time pipeline analytics.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'crm:dashboard' %}">Go to CRM →</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Login to access →</a>
+                {% endif %}
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Visions</h3>
+                <p>Define and track your long-term goals and visions. Break them down into actionable blocks and timelines.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'ui:vision_list' %}">View Visions →</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Login to access →</a>
+                {% endif %}
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🧱</div>
+                <h3>Blocks</h3>
+                <p>Immutable snapshots of your reality. Track every decision, interaction, and milestone with cryptographic integrity.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'ui:blocks_list' %}">View Blocks →</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Login to access →</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Scalable</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">✓</div>
+                <div class="stat-label">Immutable</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">🔐</div>
+                <div class="stat-label">Secure</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">⚡</div>
+                <div class="stat-label">Fast</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 LifeOS. Built with precision and intention.</p>
+    </footer>
+</body>
+</html>
+

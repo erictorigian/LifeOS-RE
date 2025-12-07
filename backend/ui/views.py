@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from backend.auth_utils import get_user_id_from_session
 
+def landing(request):
+    """Landing page / dashboard"""
+    return render(request, "ui/landing.html")
+
 def vision_list(request):
     user_id = get_user_id_from_session(request)
     context = {
