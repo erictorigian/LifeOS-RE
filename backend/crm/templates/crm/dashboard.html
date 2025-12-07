@@ -1,160 +1,198 @@
 {% extends "crm/base.html" %}
 {% block title %}Dashboard - CRM{% endblock %}
 
+{% block extra_css %}
+<style>
+    .slide-over {
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+    }
+    .slide-over.open {
+        transform: translateX(0);
+    }
+    .row-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Header -->
-<div class="mb-8">
-    <h1 class="text-2xl font-semibold text-gray-900 mb-2">Hello {{ user.get_full_name|default:user.username }} 👋</h1>
-    <p class="text-gray-600">Here's what's happening with your CRM today</p>
-</div>
-
-<!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                <span class="text-2xl">👤</span>
-            </div>
-        </div>
-        <div class="text-3xl font-bold text-gray-900 mb-1">{{ contacts_count }}</div>
-        <div class="text-sm text-gray-600 mb-1">Total Contacts</div>
-        <div class="text-xs text-green-600 font-medium">Active</div>
+<!-- KPI Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
+        <div class="text-sm text-gray-400 mb-1">Revenue MTD</div>
+        <div class="text-2xl font-semibold text-white">${{ revenue_mtd|floatformat:0|default:"0" }}</div>
     </div>
     
-    <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
-                <span class="text-2xl">💼</span>
-            </div>
-        </div>
-        <div class="text-3xl font-bold text-gray-900 mb-1">{{ deals_count }}</div>
-        <div class="text-sm text-gray-600 mb-1">Total Deals</div>
-        <div class="text-xs text-green-600 font-medium">In Pipeline</div>
+    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
+        <div class="text-sm text-gray-400 mb-1">Weighted Pipeline</div>
+        <div class="text-2xl font-semibold text-white">${{ weighted_pipeline|floatformat:0|default:"0" }}</div>
     </div>
     
-    <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
-                <span class="text-2xl">💬</span>
-            </div>
-        </div>
-        <div class="text-3xl font-bold text-gray-900 mb-1">{{ interactions_count }}</div>
-        <div class="text-sm text-gray-600 mb-1">Total Interactions</div>
-        <div class="text-xs text-green-600 font-medium">This Month</div>
+    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
+        <div class="text-sm text-gray-400 mb-1">Deals Closing This Week</div>
+        <div class="text-2xl font-semibold text-white">{{ deals_closing_this_week }}</div>
+    </div>
+    
+    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-amber-500/30 transition-colors">
+        <div class="text-sm text-gray-400 mb-1">Avg Deal Size</div>
+        <div class="text-2xl font-semibold text-white">${{ avg_deal_size|floatformat:0|default:"0" }}</div>
     </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="mb-8">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+<!-- Deals Table -->
+<div class="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-700">
+        <h2 class="text-lg font-semibold text-white">Active Deals</h2>
     </div>
-    <div class="flex flex-wrap gap-3">
-        <a href="{% url 'crm:contact_create' %}" class="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
-            <span class="mr-2">+</span>
-            New Contact
-        </a>
-        <a href="{% url 'crm:deal_create' %}" class="inline-flex items-center px-5 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">
-            <span class="mr-2">+</span>
-            New Deal
-        </a>
-        <a href="{% url 'crm:interaction_create' %}" class="inline-flex items-center px-5 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm">
-            <span class="mr-2">+</span>
-            New Interaction
-        </a>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-700">
+            <thead class="bg-slate-800">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Company</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Value</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Stage</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Next Action</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Due</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Probability</th>
+                </tr>
+            </thead>
+            <tbody class="bg-slate-800 divide-y divide-slate-700">
+                {% for deal in deals %}
+                <tr class="row-hover cursor-pointer transition-all" onclick="openSlideOver('{{ deal.id }}')">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-white">{{ deal.contact.company }}</div>
+                        <div class="text-xs text-gray-400">{{ deal.contact.contact_name }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-white">
+                            {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full
+                            {% if deal.deal_stage == 'Closed Won' %}bg-green-500/20 text-green-400 border border-green-500/30
+                            {% elif deal.deal_stage == 'Negotiation' %}bg-amber-500/20 text-amber-400 border border-amber-500/30
+                            {% elif deal.deal_stage == 'Proposal' %}bg-blue-500/20 text-blue-400 border border-blue-500/30
+                            {% else %}bg-slate-700 text-gray-300 border border-slate-600{% endif %}">
+                            {{ deal.deal_stage }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-300">{{ deal.next_action|default:"—"|truncatewords:5 }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if deal.next_action_due %}
+                            {% if deal.next_action_due < today %}
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+                                    {{ deal.next_action_due|date:"M d" }} ⚠️
+                                </span>
+                            {% else %}
+                                <span class="text-sm text-gray-300">{{ deal.next_action_due|date:"M d, Y" }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-sm text-gray-500">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-white">{{ deal.probability_pct }}%</div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                        No deals found. <a href="{% url 'crm:deal_create' %}" class="text-amber-400 hover:text-amber-300">Create one</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Recent Items -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- Recent Contacts -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold text-gray-900">Recent Contacts</h3>
-                <a href="{% url 'crm:contact_list' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View all</a>
-            </div>
+<!-- Slide-Over Detail Panel -->
+<div id="slideOver" class="slide-over fixed inset-y-0 right-0 w-full md:w-96 bg-slate-800 border-l border-slate-700 z-50 overflow-y-auto">
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-white">Deal Details</h3>
+            <button onclick="closeSlideOver()" class="text-gray-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </div>
-        <div class="p-6">
-            {% if recent_contacts %}
-                <ul class="space-y-4">
-                    {% for contact in recent_contacts %}
-                    <li class="flex items-center justify-between group">
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium text-gray-900 truncate">{{ contact.contact_name }}</div>
-                            <div class="text-xs text-gray-500 mt-1 truncate">{{ contact.company }}</div>
-                        </div>
-                        <a href="{% url 'crm:contact_update' contact.id %}" class="ml-4 text-xs text-blue-600 hover:text-blue-700 font-medium">Edit</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="text-center py-8">
-                    <p class="text-sm text-gray-400 mb-4">No contacts yet</p>
-                    <a href="{% url 'crm:contact_create' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Create your first contact</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Recent Deals -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold text-gray-900">Recent Deals</h3>
-                <a href="{% url 'crm:deal_list' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View all</a>
-            </div>
-        </div>
-        <div class="p-6">
-            {% if recent_deals %}
-                <ul class="space-y-4">
-                    {% for deal in recent_deals %}
-                    <li class="flex items-center justify-between group">
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium text-gray-900 truncate">{{ deal.contact.company }}</div>
-                            <div class="text-xs text-gray-500 mt-1 truncate">{{ deal.deal_stage }}</div>
-                        </div>
-                        <a href="{% url 'crm:deal_update' deal.id %}" class="ml-4 text-xs text-blue-600 hover:text-blue-700 font-medium">Edit</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="text-center py-8">
-                    <p class="text-sm text-gray-400 mb-4">No deals yet</p>
-                    <a href="{% url 'crm:deal_create' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Create your first deal</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Recent Interactions -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold text-gray-900">Recent Interactions</h3>
-                <a href="{% url 'crm:interaction_list' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View all</a>
-            </div>
-        </div>
-        <div class="p-6">
-            {% if recent_interactions %}
-                <ul class="space-y-4">
-                    {% for interaction in recent_interactions %}
-                    <li class="flex items-center justify-between group">
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium text-gray-900 truncate">{{ interaction.contact.contact_name }}</div>
-                            <div class="text-xs text-gray-500 mt-1 truncate">{{ interaction.interaction_type }}</div>
-                        </div>
-                        <a href="{% url 'crm:interaction_update' interaction.id %}" class="ml-4 text-xs text-blue-600 hover:text-blue-700 font-medium">Edit</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="text-center py-8">
-                    <p class="text-sm text-gray-400 mb-4">No interactions yet</p>
-                    <a href="{% url 'crm:interaction_create' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Create your first interaction</a>
-                </div>
-            {% endif %}
+        <div id="slideOverContent" class="space-y-4">
+            <!-- Content will be loaded here -->
         </div>
     </div>
 </div>
+
+<!-- Overlay -->
+<div id="overlay" class="hidden fixed inset-0 bg-black/50 z-40" onclick="closeSlideOver()"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const today = new Date('{{ today|date:"Y-m-d" }}');
+    
+    function openSlideOver(dealId) {
+        // Fetch deal details and populate slide-over
+        fetch(`/crm/deals/${dealId}/detail/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('slideOverContent').innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">Company</div>
+                            <div class="text-lg font-semibold text-white">${data.company}</div>
+                            <div class="text-sm text-gray-300">${data.contact_name}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">Deal Value</div>
+                            <div class="text-xl font-semibold text-white">${data.deal_value || '—'}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">Stage</div>
+                            <div class="text-sm font-medium text-white">${data.stage}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">Probability</div>
+                            <div class="text-sm font-medium text-white">${data.probability}%</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">Expected Close</div>
+                            <div class="text-sm text-white">${data.expected_close || '—'}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">Next Action</div>
+                            <div class="text-sm text-white">${data.next_action || '—'}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">Notes</div>
+                            <div class="text-sm text-gray-300">${data.notes || '—'}</div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-700 flex gap-3">
+                            <a href="/crm/deals/${dealId}/update/" class="flex-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-500/30 text-center">Edit</a>
+                            <a href="/crm/deals/${dealId}/delete/" class="flex-1 bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-500/30 text-center">Delete</a>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('slideOver').classList.add('open');
+                document.getElementById('overlay').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Fallback: redirect to detail page
+                window.location.href = `/crm/deals/${dealId}/update/`;
+            });
+    }
+    
+    function closeSlideOver() {
+        document.getElementById('slideOver').classList.remove('open');
+        document.getElementById('overlay').classList.add('hidden');
+    }
+</script>
 {% endblock %}

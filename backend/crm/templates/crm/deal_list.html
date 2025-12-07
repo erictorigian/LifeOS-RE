@@ -4,69 +4,68 @@
 {% block content %}
 <div class="mb-6 flex justify-between items-center">
     <div>
-        <h1 class="text-2xl font-semibold text-gray-900 mb-1">All Deals</h1>
-        <p class="text-sm text-gray-600">Pipeline Overview</p>
+        <h1 class="text-2xl font-semibold text-white mb-1">All Deals</h1>
+        <p class="text-sm text-gray-400">Pipeline Overview</p>
     </div>
-    <a href="{% url 'crm:deal_create' %}" class="bg-green-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">
+    <a href="{% url 'crm:deal_create' %}" class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-amber-500/30 transition-colors">
         + New Deal
     </a>
 </div>
 
 {% if messages %}
     {% for message in messages %}
-    <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md">
+    <div class="mb-4 p-4 bg-green-500/20 border border-green-500/30 text-green-400 rounded-lg">
         {{ message }}
     </div>
     {% endfor %}
 {% endif %}
 
-<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+<div class="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-slate-700">
+        <thead class="bg-slate-800">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stage</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Probability</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Close</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Service</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Stage</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Value</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Probability</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Expected Close</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-slate-800 divide-y divide-slate-700">
             {% for deal in deals %}
-            <tr class="hover:bg-gray-50">
+            <tr class="hover:bg-slate-700/50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">{{ deal.contact.company }}</div>
-                    <div class="text-sm text-gray-500">{{ deal.contact.contact_name }}</div>
+                    <div class="text-sm font-medium text-white">{{ deal.contact.company }}</div>
+                    <div class="text-sm text-gray-400">{{ deal.contact.contact_name }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ deal.service|default:"—" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ deal.service|default:"—" }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full
+                        {% if deal.deal_stage == 'Closed Won' %}bg-green-500/20 text-green-400 border border-green-500/30
+                        {% elif deal.deal_stage == 'Negotiation' %}bg-amber-500/20 text-amber-400 border border-amber-500/30
+                        {% elif deal.deal_stage == 'Proposal' %}bg-blue-500/20 text-blue-400 border border-blue-500/30
+                        {% else %}bg-slate-700 text-gray-300 border border-slate-600{% endif %}">
                         {{ deal.deal_stage }}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:2 }}{% else %}—{% endif %}
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ deal.probability_pct }}%</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ deal.expected_close_date|default:"—" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ deal.probability_pct }}%</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ deal.expected_close_date|date:"M d, Y"|default:"—" }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{% url 'crm:deal_update' deal.id %}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                    <a href="{% url 'crm:deal_delete' deal.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+                    <a href="{% url 'crm:deal_update' deal.id %}" class="text-amber-400 hover:text-amber-300 mr-3">Edit</a>
+                    <a href="{% url 'crm:deal_delete' deal.id %}" class="text-red-400 hover:text-red-300">Delete</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7" class="px-6 py-4 text-center text-gray-500">No deals found. <a href="{% url 'crm:deal_create' %}" class="text-blue-600">Create one</a></td>
+                <td colspan="7" class="px-6 py-8 text-center text-gray-400">No deals found. <a href="{% url 'crm:deal_create' %}" class="text-amber-400 hover:text-amber-300">Create one</a></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
-<div class="mt-4">
-    <a href="{% url 'crm:dashboard' %}" class="text-blue-600 hover:text-blue-800">← Back to Dashboard</a>
-</div>
 {% endblock %}
-

@@ -181,23 +181,81 @@ def interaction_delete(request, pk):
 
 @login_required
 def dashboard(request):
-    """CRM Dashboard"""
-    user_id = request.user.id
-    contacts_count = Contact.objects.filter(user_id=user_id).count()
-    deals_count = Deal.objects.filter(user_id=user_id).count()
-    interactions_count = Interaction.objects.filter(user_id=user_id).count()
+    """CRM Dashboard with revenue metrics"""
+    from django.utils import timezone
+    from datetime import timedelta, date
+    from decimal import Decimal
     
-    recent_contacts = Contact.objects.filter(user_id=user_id)[:5]
-    recent_deals = Deal.objects.select_related('contact').filter(user_id=user_id)[:5]
-    recent_interactions = Interaction.objects.select_related('contact').filter(user_id=user_id)[:5]
+    user_id = request.user.id
+    now = timezone.now()
+    today = date.today()
+    this_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    next_week = now + timedelta(days=7)
+    
+    # Get all deals
+    all_deals = Deal.objects.select_related('contact').filter(user_id=user_id)
+    
+    # Revenue this month (closed won deals closed this month)
+    this_month_start_date = this_month_start.date() if hasattr(this_month_start, 'date') else date(this_month_start.year, this_month_start.month, 1)
+    next_month_start_date = date(this_month_start_date.year, this_month_start_date.month + 1, 1) if this_month_start_date.month < 12 else date(this_month_start_date.year + 1, 1, 1)
+    
+    closed_won_this_month = all_deals.filter(
+        deal_stage='Closed Won',
+        expected_close_date__gte=this_month_start_date,
+        expected_close_date__lt=next_month_start_date
+    )
+    revenue_mtd = sum(deal.deal_value_usd or Decimal('0') for deal in closed_won_this_month)
+    
+    # Weighted pipeline (deal_value * probability)
+    weighted_pipeline = sum(
+        (deal.deal_value_usd or Decimal('0')) * Decimal(deal.probability_pct) / 100
+        for deal in all_deals.exclude(deal_stage__in=['Closed Won', 'Closed Lost'])
+    )
+    
+    # Deals closing this week
+    deals_closing_this_week = all_deals.filter(
+        expected_close_date__gte=today,
+        expected_close_date__lte=next_week.date()
+    ).exclude(deal_stage__in=['Closed Won', 'Closed Lost']).count()
+    
+    # Average deal size
+    deals_with_value = all_deals.exclude(deal_value_usd__isnull=True).exclude(deal_value_usd=0)
+    avg_deal_size = sum(deal.deal_value_usd for deal in deals_with_value) / len(deals_with_value) if deals_with_value else Decimal('0')
+    
+    # All deals for table (exclude closed lost)
+    active_deals = all_deals.exclude(deal_stage='Closed Lost').order_by('-expected_close_date', '-created_at')
     
     context = {
-        'contacts_count': contacts_count,
-        'deals_count': deals_count,
-        'interactions_count': interactions_count,
-        'recent_contacts': recent_contacts,
-        'recent_deals': recent_deals,
-        'recent_interactions': recent_interactions,
+        'revenue_mtd': revenue_mtd,
+        'weighted_pipeline': weighted_pipeline,
+        'deals_closing_this_week': deals_closing_this_week,
+        'avg_deal_size': avg_deal_size,
+        'deals': active_deals,
+        'today': today,
     }
     return render(request, 'crm/dashboard.html', context)
+
+
+@login_required
+def deal_detail_json(request, pk):
+    """Return deal details as JSON for slide-over"""
+    from django.http import JsonResponse
+    from django.utils.dateformat import format
+    
+    user_id = request.user.id
+    deal = get_object_or_404(Deal, pk=pk, user_id=user_id)
+    
+    return JsonResponse({
+        'company': deal.contact.company,
+        'contact_name': deal.contact.contact_name,
+        'deal_value': f"${deal.deal_value_usd:,.0f}" if deal.deal_value_usd else None,
+        'stage': deal.deal_stage,
+        'probability': deal.probability_pct,
+        'expected_close': deal.expected_close_date.strftime('%B %d, %Y') if deal.expected_close_date else None,
+        'next_action': deal.next_action,
+        'next_action_due': deal.next_action_due.strftime('%B %d, %Y') if deal.next_action_due else None,
+        'notes': deal.notes,
+        'service': deal.service,
+        'engagement': deal.engagement,
+    })
 

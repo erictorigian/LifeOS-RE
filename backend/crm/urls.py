@@ -17,6 +17,7 @@ urlpatterns = [
     path('deals/create/', views.deal_create, name='deal_create'),
     path('deals/<uuid:pk>/update/', views.deal_update, name='deal_update'),
     path('deals/<uuid:pk>/delete/', views.deal_delete, name='deal_delete'),
+    path('deals/<uuid:pk>/detail/', views.deal_detail_json, name='deal_detail_json'),
     
     # Interactions
     path('interactions/', views.interaction_list, name='interaction_list'),
