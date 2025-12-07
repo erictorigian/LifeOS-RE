@@ -49,8 +49,8 @@ class Deal(models.Model):
     last_contact_date = models.DateField(blank=True, null=True)
     last_action = models.TextField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    status_flags = models.JSONField(default=list, blank=True, null=True)
-    tags = models.JSONField(default=list, blank=True, null=True)
+    status_flags = models.TextField(blank=True, null=True)  # Store as JSON string instead of JSONField
+    tags = models.TextField(blank=True, null=True)  # Store as JSON string instead of JSONField
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
