@@ -1,71 +1,460 @@
 {% extends "crm/base.html" %}
 {% block title %}Deals - CRM{% endblock %}
 
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 32px;
+    }
+    
+    .page-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.02em;
+    }
+    
+    .page-subtitle {
+        font-size: 15px;
+        color: #86868b;
+        margin: 0;
+    }
+    
+    .btn-new {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: #1d1d1f;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: opacity 0.2s;
+    }
+    
+    .btn-new:hover {
+        opacity: 0.8;
+    }
+    
+    .deals-container {
+        background-color: #ffffff;
+        border: 1px solid #e5e5e7;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .deals-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .deals-table thead {
+        background-color: #fafafa;
+        border-bottom: 1px solid #e5e5e7;
+    }
+    
+    .deals-table th {
+        padding: 16px 24px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 500;
+        color: #86868b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .deals-table tbody tr {
+        border-bottom: 1px solid #f5f5f7;
+        transition: background-color 0.15s;
+    }
+    
+    .deals-table tbody tr:hover {
+        background-color: #fafafa;
+    }
+    
+    .deals-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .deals-table td {
+        padding: 20px 24px;
+        font-size: 15px;
+    }
+    
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .contact-company {
+        font-weight: 600;
+        color: #1d1d1f;
+        letter-spacing: -0.01em;
+    }
+    
+    .contact-name {
+        font-size: 13px;
+        color: #86868b;
+    }
+    
+    .service-name {
+        color: #1d1d1f;
+    }
+    
+    .stage-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        background-color: #f5f5f7;
+        color: #1d1d1f;
+        border: 1px solid #e5e5e7;
+    }
+    
+    .stage-badge.closed-won {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-color: #c8e6c9;
+    }
+    
+    .stage-badge.negotiation,
+    .stage-badge.proposal {
+        background-color: #fff3e0;
+        color: #e65100;
+        border-color: #ffe0b2;
+    }
+    
+    .stage-badge.qualification {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        border-color: #bbdefb;
+    }
+    
+    .deal-value {
+        font-weight: 600;
+        color: #1d1d1f;
+        letter-spacing: -0.01em;
+    }
+    
+    .probability {
+        color: #86868b;
+    }
+    
+    .expected-close {
+        color: #86868b;
+    }
+    
+    .actions {
+        display: flex;
+        gap: 16px;
+    }
+    
+    .action-link {
+        color: #1d1d1f;
+        text-decoration: none;
+        font-size: 15px;
+        transition: opacity 0.2s;
+    }
+    
+    .action-link:hover {
+        opacity: 0.6;
+    }
+    
+    .action-link.delete {
+        color: #ff3b30;
+    }
+    
+    .empty-state {
+        padding: 80px 24px;
+        text-align: center;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+    }
+    
+    .empty-state-text {
+        font-size: 17px;
+        color: #86868b;
+        margin-bottom: 24px;
+    }
+    
+    .empty-state-link {
+        color: #1d1d1f;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .empty-state-link:hover {
+        opacity: 0.6;
+    }
+    
+    .messages {
+        margin-bottom: 24px;
+    }
+    
+    .message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        font-size: 15px;
+        border: 1px solid #c8e6c9;
+    }
+    
+    @media (max-width: 1024px) {
+        .deals-table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .deals-table th,
+        .deals-table td {
+            padding: 12px 16px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        
+        .deals-table {
+            font-size: 14px;
+        }
+        
+        .deals-table th {
+            font-size: 11px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mb-6 flex justify-between items-center">
+<div class="page-header">
     <div>
-        <h1 class="text-2xl font-semibold text-white mb-1">All Deals</h1>
-        <p class="text-sm text-gray-400">Pipeline Overview</p>
+        <h1 class="page-title">All Deals</h1>
+        <p class="page-subtitle">Pipeline Overview</p>
     </div>
-    <a href="{% url 'crm:deal_create' %}" class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-amber-500/30 transition-colors">
-        + New Deal
+    <a href="{% url 'crm:deal_create' %}" class="btn-new">
+        <span>+</span>
+        <span>New Deal</span>
     </a>
 </div>
 
 {% if messages %}
+<div class="messages">
     {% for message in messages %}
-    <div class="mb-4 p-4 bg-green-500/20 border border-green-500/30 text-green-400 rounded-lg">
-        {{ message }}
-    </div>
+    <div class="message">{{ message }}</div>
     {% endfor %}
+</div>
 {% endif %}
 
-<div class="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
-    <table class="min-w-full divide-y divide-slate-700">
-        <thead class="bg-slate-800">
-            <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Service</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Stage</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Value</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Probability</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Expected Close</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="bg-slate-800 divide-y divide-slate-700">
-            {% for deal in deals %}
-            <tr class="hover:bg-slate-700/50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-white">{{ deal.contact.company }}</div>
-                    <div class="text-sm text-gray-400">{{ deal.contact.contact_name }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ deal.service|default:"—" }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 text-xs font-medium rounded-full
-                        {% if deal.deal_stage == 'Closed Won' %}bg-green-500/20 text-green-400 border border-green-500/30
-                        {% elif deal.deal_stage == 'Negotiation' %}bg-amber-500/20 text-amber-400 border border-amber-500/30
-                        {% elif deal.deal_stage == 'Proposal' %}bg-blue-500/20 text-blue-400 border border-blue-500/30
-                        {% else %}bg-slate-700 text-gray-300 border border-slate-600{% endif %}">
-                        {{ deal.deal_stage }}
-                    </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                    {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ deal.probability_pct }}%</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ deal.expected_close_date|date:"M d, Y"|default:"—" }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{% url 'crm:deal_update' deal.id %}" class="text-amber-400 hover:text-amber-300 mr-3">Edit</a>
-                    <a href="{% url 'crm:deal_delete' deal.id %}" class="text-red-400 hover:text-red-300">Delete</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="px-6 py-8 text-center text-gray-400">No deals found. <a href="{% url 'crm:deal_create' %}" class="text-amber-400 hover:text-amber-300">Create one</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- Monthly/Recurring Deals -->
+{% if monthly_deals %}
+<div style="margin-bottom: 48px;">
+    <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; font-weight: 600; color: #1d1d1f; margin: 0 0 4px 0; letter-spacing: -0.01em;">Monthly & Recurring Deals</h2>
+        <p style="font-size: 15px; color: #86868b; margin: 0;">{{ monthly_deals|length }} recurring deal{{ monthly_deals|length|pluralize }}</p>
+    </div>
+    <div class="deals-container">
+        <table class="deals-table">
+            <thead>
+                <tr>
+                    <th>Contact</th>
+                    <th>Service</th>
+                    <th>Frequency</th>
+                    <th>Stage</th>
+                    <th>Value</th>
+                    <th>Probability</th>
+                    <th>Expected Close</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deal in monthly_deals %}
+                <tr>
+                    <td>
+                        <div class="contact-info">
+                            <div class="contact-company">{{ deal.contact.company }}</div>
+                            <div class="contact-name">{{ deal.contact.contact_name }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="service-name">{{ deal.service|default:"—" }}</span>
+                    </td>
+                    <td>
+                        <span style="font-size: 13px; color: #86868b;">{{ deal.billing_frequency }}</span>
+                    </td>
+                    <td>
+                        <span class="stage-badge {{ deal.deal_stage|lower|slugify }}">{{ deal.deal_stage }}</span>
+                    </td>
+                    <td>
+                        <span class="deal-value">
+                            {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="probability">{{ deal.probability_pct }}%</span>
+                    </td>
+                    <td>
+                        <span class="expected-close">{{ deal.expected_close_date|date:"M d, Y"|default:"—" }}</span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'crm:deal_update' deal.id %}" class="action-link">Edit</a>
+                            <a href="{% url 'crm:deal_delete' deal.id %}" class="action-link delete">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+{% endif %}
+
+<!-- One-Time Deals -->
+{% if one_time_deals %}
+<div style="margin-bottom: 48px;">
+    <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; font-weight: 600; color: #1d1d1f; margin: 0 0 4px 0; letter-spacing: -0.01em;">One-Time Deals</h2>
+        <p style="font-size: 15px; color: #86868b; margin: 0;">{{ one_time_deals|length }} one-time deal{{ one_time_deals|length|pluralize }}</p>
+    </div>
+    <div class="deals-container">
+        <table class="deals-table">
+            <thead>
+                <tr>
+                    <th>Contact</th>
+                    <th>Service</th>
+                    <th>Stage</th>
+                    <th>Value</th>
+                    <th>Probability</th>
+                    <th>Expected Close</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deal in one_time_deals %}
+                <tr>
+                    <td>
+                        <div class="contact-info">
+                            <div class="contact-company">{{ deal.contact.company }}</div>
+                            <div class="contact-name">{{ deal.contact.contact_name }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="service-name">{{ deal.service|default:"—" }}</span>
+                    </td>
+                    <td>
+                        <span class="stage-badge {{ deal.deal_stage|lower|slugify }}">{{ deal.deal_stage }}</span>
+                    </td>
+                    <td>
+                        <span class="deal-value">
+                            {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="probability">{{ deal.probability_pct }}%</span>
+                    </td>
+                    <td>
+                        <span class="expected-close">{{ deal.expected_close_date|date:"M d, Y"|default:"—" }}</span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'crm:deal_update' deal.id %}" class="action-link">Edit</a>
+                            <a href="{% url 'crm:deal_delete' deal.id %}" class="action-link delete">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Other Deals (no billing frequency set) -->
+{% if other_deals %}
+<div style="margin-bottom: 48px;">
+    <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; font-weight: 600; color: #1d1d1f; margin: 0 0 4px 0; letter-spacing: -0.01em;">Other Deals</h2>
+        <p style="font-size: 15px; color: #86868b; margin: 0;">Deals without billing frequency set</p>
+    </div>
+    <div class="deals-container">
+        <table class="deals-table">
+            <thead>
+                <tr>
+                    <th>Contact</th>
+                    <th>Service</th>
+                    <th>Stage</th>
+                    <th>Value</th>
+                    <th>Probability</th>
+                    <th>Expected Close</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deal in other_deals %}
+                <tr>
+                    <td>
+                        <div class="contact-info">
+                            <div class="contact-company">{{ deal.contact.company }}</div>
+                            <div class="contact-name">{{ deal.contact.contact_name }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="service-name">{{ deal.service|default:"—" }}</span>
+                    </td>
+                    <td>
+                        <span class="stage-badge {{ deal.deal_stage|lower|slugify }}">{{ deal.deal_stage }}</span>
+                    </td>
+                    <td>
+                        <span class="deal-value">
+                            {% if deal.deal_value_usd %}${{ deal.deal_value_usd|floatformat:0 }}{% else %}—{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="probability">{{ deal.probability_pct }}%</span>
+                    </td>
+                    <td>
+                        <span class="expected-close">{{ deal.expected_close_date|date:"M d, Y"|default:"—" }}</span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'crm:deal_update' deal.id %}" class="action-link">Edit</a>
+                            <a href="{% url 'crm:deal_delete' deal.id %}" class="action-link delete">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Empty state if no deals at all -->
+{% if not monthly_deals and not one_time_deals and not other_deals %}
+<div class="deals-container">
+    <div class="empty-state">
+        <div class="empty-state-icon">💼</div>
+        <div class="empty-state-text">No deals found.</div>
+        <a href="{% url 'crm:deal_create' %}" class="empty-state-link">Create your first deal →</a>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

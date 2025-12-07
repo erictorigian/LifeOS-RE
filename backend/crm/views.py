@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import uuid
-from .models import Contact, Deal, Interaction
+from .models import Contact, Deal, Interaction, NextAction
 from .forms import ContactForm, DealForm, InteractionForm
 
 
@@ -63,10 +63,21 @@ def contact_delete(request, pk):
 
 @login_required
 def deal_list(request):
-    """List all deals"""
+    """List all deals, separated by monthly/recurring and one-time"""
     user_id = request.user.id
-    deals = Deal.objects.select_related('contact').filter(user_id=user_id)
-    return render(request, 'crm/deal_list.html', {'deals': deals})
+    all_deals = Deal.objects.select_related('contact').filter(user_id=user_id).order_by('-expected_close_date', '-created_at')
+    
+    # Separate deals by billing frequency
+    monthly_deals = all_deals.filter(billing_frequency__in=['Monthly', 'Quarterly', 'Annually'])
+    one_time_deals = all_deals.filter(billing_frequency='One-time')
+    other_deals = all_deals.exclude(billing_frequency__in=['Monthly', 'Quarterly', 'Annually', 'One-time'])
+    
+    return render(request, 'crm/deal_list.html', {
+        'monthly_deals': monthly_deals,
+        'one_time_deals': one_time_deals,
+        'other_deals': other_deals,
+        'all_deals': all_deals,  # For backwards compatibility
+    })
 
 
 @login_required
@@ -181,57 +192,134 @@ def interaction_delete(request, pk):
 
 @login_required
 def dashboard(request):
-    """CRM Dashboard with revenue metrics"""
+    """CRM Dashboard focused on deals, customers, and next steps"""
     from django.utils import timezone
     from datetime import timedelta, date
     from decimal import Decimal
+    from collections import defaultdict
     
     user_id = request.user.id
     now = timezone.now()
     today = date.today()
-    this_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    next_week = now + timedelta(days=7)
+    next_week = today + timedelta(days=7)
+    next_month = today + timedelta(days=30)
     
-    # Get all deals
+    # Get all deals with contacts
     all_deals = Deal.objects.select_related('contact').filter(user_id=user_id)
+    active_deals = all_deals.exclude(deal_stage__in=['Closed Won', 'Closed Lost']).order_by('-expected_close_date', '-created_at')
     
-    # Revenue this month (closed won deals closed this month)
-    this_month_start_date = this_month_start.date() if hasattr(this_month_start, 'date') else date(this_month_start.year, this_month_start.month, 1)
-    next_month_start_date = date(this_month_start_date.year, this_month_start_date.month + 1, 1) if this_month_start_date.month < 12 else date(this_month_start_date.year + 1, 1, 1)
+    # Get next actions from NextAction model
+    upcoming_actions = NextAction.objects.select_related('contact', 'deal').filter(
+        user_id=user_id,
+        status='Pending',
+        due_date__gte=today
+    ).order_by('due_date')[:10]
     
-    closed_won_this_month = all_deals.filter(
-        deal_stage='Closed Won',
-        expected_close_date__gte=this_month_start_date,
-        expected_close_date__lt=next_month_start_date
-    )
-    revenue_mtd = sum(deal.deal_value_usd or Decimal('0') for deal in closed_won_this_month)
+    # Get next steps from deals (next_action field)
+    deal_next_steps = []
+    for deal in active_deals:
+        if deal.next_action and deal.next_action_due:
+            deal_next_steps.append({
+                'deal': deal,
+                'action': deal.next_action,
+                'due_date': deal.next_action_due,
+                'contact': deal.contact,
+            })
     
-    # Weighted pipeline (deal_value * probability)
+    # Sort and combine next steps
+    all_next_steps = sorted(
+        deal_next_steps,
+        key=lambda x: x['due_date']
+    )[:10]
+    
+    # Separate monthly/recurring deals from one-time deals (from ALL deals, not just active)
+    monthly_deals_all = all_deals.filter(billing_frequency__in=['Monthly', 'Quarterly', 'Annually'])
+    one_time_deals_all = all_deals.filter(billing_frequency='One-time')
+    # Deals without billing_frequency - we'll include their values in totals but show separately
+    no_frequency_deals_all = all_deals.exclude(billing_frequency__in=['Monthly', 'Quarterly', 'Annually', 'One-time'])
+    
+    # For display, use active deals only
+    monthly_deals = active_deals.filter(billing_frequency__in=['Monthly', 'Quarterly', 'Annually'])
+    one_time_deals = active_deals.filter(billing_frequency='One-time')
+    no_frequency_deals = active_deals.exclude(billing_frequency__in=['Monthly', 'Quarterly', 'Annually', 'One-time'])
+    
+    # Group monthly deals by contact
+    monthly_deals_by_contact = defaultdict(list)
+    for deal in monthly_deals:
+        monthly_deals_by_contact[deal.contact].append(deal)
+    
+    # Group one-time deals by contact
+    one_time_deals_by_contact = defaultdict(list)
+    for deal in one_time_deals:
+        one_time_deals_by_contact[deal.contact].append(deal)
+    
+    # Group deals without frequency by contact (for backwards compatibility)
+    no_frequency_deals_by_contact = defaultdict(list)
+    for deal in no_frequency_deals:
+        no_frequency_deals_by_contact[deal.contact].append(deal)
+    
+    # Calculate key metrics - use ALL deals for total values (including closed)
+    total_pipeline = sum(deal.deal_value_usd or Decimal('0') for deal in active_deals)
     weighted_pipeline = sum(
         (deal.deal_value_usd or Decimal('0')) * Decimal(deal.probability_pct) / 100
-        for deal in all_deals.exclude(deal_stage__in=['Closed Won', 'Closed Lost'])
+        for deal in active_deals
     )
     
-    # Deals closing this week
-    deals_closing_this_week = all_deals.filter(
+    # Monthly/Recurring total value (sum of all recurring deal values from ALL deals)
+    monthly_total_value = sum(deal.deal_value_usd or Decimal('0') for deal in monthly_deals_all)
+    
+    # One-time total value (sum of all one-time deal values from ALL deals)
+    one_time_total_value = sum(deal.deal_value_usd or Decimal('0') for deal in one_time_deals_all)
+    
+    # Debug: Check if deals exist and have values
+    # If deals don't have billing_frequency set, they won't be in monthly or one-time
+    # Let's also check deals without frequency
+    no_freq_total = sum(deal.deal_value_usd or Decimal('0') for deal in no_frequency_deals_all)
+    
+    # If there are deals without billing_frequency, we could add them to totals
+    # For now, let's make sure we're at least seeing all deals with values
+    
+    # Monthly recurring revenue (MRR) - sum of monthly deals
+    mrr = sum(deal.deal_value_usd or Decimal('0') for deal in monthly_deals.filter(billing_frequency='Monthly'))
+    # Add quarterly/annual converted to monthly
+    for deal in monthly_deals:
+        if deal.billing_frequency == 'Quarterly' and deal.deal_value_usd:
+            mrr += (deal.deal_value_usd or Decimal('0')) / 3
+        elif deal.billing_frequency == 'Annually' and deal.deal_value_usd:
+            mrr += (deal.deal_value_usd or Decimal('0')) / 12
+    
+    # Deals closing soon
+    deals_closing_soon = active_deals.filter(
         expected_close_date__gte=today,
-        expected_close_date__lte=next_week.date()
-    ).exclude(deal_stage__in=['Closed Won', 'Closed Lost']).count()
+        expected_close_date__lte=next_month
+    )
     
-    # Average deal size
-    deals_with_value = all_deals.exclude(deal_value_usd__isnull=True).exclude(deal_value_usd=0)
-    avg_deal_size = sum(deal.deal_value_usd for deal in deals_with_value) / len(deals_with_value) if deals_with_value else Decimal('0')
-    
-    # All deals for table (exclude closed lost)
-    active_deals = all_deals.exclude(deal_stage='Closed Lost').order_by('-expected_close_date', '-created_at')
+    # Debug info - check all deals
+    all_deals_count = all_deals.count()
+    all_deals_with_value = [d for d in all_deals if d.deal_value_usd]
+    all_deals_with_freq = [d for d in all_deals if d.billing_frequency]
     
     context = {
-        'revenue_mtd': revenue_mtd,
+        'monthly_deals_by_contact': dict(monthly_deals_by_contact),
+        'one_time_deals_by_contact': dict(one_time_deals_by_contact),
+        'no_frequency_deals_by_contact': dict(no_frequency_deals_by_contact),
+        'next_steps': all_next_steps,
+        'upcoming_actions': upcoming_actions,
+        'total_pipeline': total_pipeline,
         'weighted_pipeline': weighted_pipeline,
-        'deals_closing_this_week': deals_closing_this_week,
-        'avg_deal_size': avg_deal_size,
-        'deals': active_deals,
+        'monthly_total_value': monthly_total_value,
+        'one_time_total_value': one_time_total_value,
+        'no_freq_total': no_freq_total,  # For debugging
+        'mrr': mrr,
+        'deals_closing_soon': deals_closing_soon,
+        'active_deals_count': active_deals.count(),
+        'monthly_deals_count': monthly_deals.count(),
+        'one_time_deals_count': one_time_deals.count(),
+        'all_deals_count': all_deals_count,  # Debug
+        'all_deals_with_value_count': len(all_deals_with_value),  # Debug
+        'all_deals_with_freq_count': len(all_deals_with_freq),  # Debug
         'today': today,
+        'next_week': next_week,
     }
     return render(request, 'crm/dashboard.html', context)
 

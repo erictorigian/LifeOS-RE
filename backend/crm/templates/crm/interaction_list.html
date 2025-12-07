@@ -1,83 +1,306 @@
 {% extends "crm/base.html" %}
 {% block title %}Interactions - CRM{% endblock %}
 
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 32px;
+    }
+    
+    .page-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.02em;
+    }
+    
+    .page-subtitle {
+        font-size: 15px;
+        color: #86868b;
+        margin: 0;
+    }
+    
+    .btn-new {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: #1d1d1f;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: opacity 0.2s;
+    }
+    
+    .btn-new:hover {
+        opacity: 0.8;
+    }
+    
+    .interactions-container {
+        background-color: #ffffff;
+        border: 1px solid #e5e5e7;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .interactions-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .interactions-table thead {
+        background-color: #fafafa;
+        border-bottom: 1px solid #e5e5e7;
+    }
+    
+    .interactions-table th {
+        padding: 16px 24px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 500;
+        color: #86868b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .interactions-table tbody tr {
+        border-bottom: 1px solid #f5f5f7;
+        transition: background-color 0.15s;
+    }
+    
+    .interactions-table tbody tr:hover {
+        background-color: #fafafa;
+    }
+    
+    .interactions-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .interactions-table td {
+        padding: 20px 24px;
+        font-size: 15px;
+    }
+    
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .contact-name {
+        font-weight: 600;
+        color: #1d1d1f;
+        letter-spacing: -0.01em;
+    }
+    
+    .contact-company {
+        font-size: 13px;
+        color: #86868b;
+    }
+    
+    .interaction-type {
+        color: #1d1d1f;
+    }
+    
+    .direction-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    
+    .direction-badge.inbound {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+    }
+    
+    .direction-badge.outbound {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        border: 1px solid #bbdefb;
+    }
+    
+    .interaction-date {
+        color: #86868b;
+    }
+    
+    .outcome {
+        color: #86868b;
+    }
+    
+    .actions {
+        display: flex;
+        gap: 16px;
+    }
+    
+    .action-link {
+        color: #1d1d1f;
+        text-decoration: none;
+        font-size: 15px;
+        transition: opacity 0.2s;
+    }
+    
+    .action-link:hover {
+        opacity: 0.6;
+    }
+    
+    .action-link.delete {
+        color: #ff3b30;
+    }
+    
+    .empty-state {
+        padding: 80px 24px;
+        text-align: center;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+    }
+    
+    .empty-state-text {
+        font-size: 17px;
+        color: #86868b;
+        margin-bottom: 24px;
+    }
+    
+    .empty-state-link {
+        color: #1d1d1f;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .empty-state-link:hover {
+        opacity: 0.6;
+    }
+    
+    .messages {
+        margin-bottom: 24px;
+    }
+    
+    .message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        font-size: 15px;
+        border: 1px solid #c8e6c9;
+    }
+    
+    @media (max-width: 1024px) {
+        .interactions-table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .interactions-table th,
+        .interactions-table td {
+            padding: 12px 16px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        
+        .interactions-table {
+            font-size: 14px;
+        }
+        
+        .interactions-table th {
+            font-size: 11px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Header -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+<div class="page-header">
     <div>
-        <h2 style="margin: 0 0 8px 0; font-size: 28px; font-weight: bold; color: #f1f5f9;">All Interactions</h2>
-        <p style="margin: 0; font-size: 14px; color: #94a3b8;">Activity History</p>
+        <h1 class="page-title">All Interactions</h1>
+        <p class="page-subtitle">Activity History</p>
     </div>
-    <a href="{% url 'crm:interaction_create' %}" style="background-color: #f59e0b; color: #000; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px;">+ New Interaction</a>
+    <a href="{% url 'crm:interaction_create' %}" class="btn-new">
+        <span>+</span>
+        <span>New Interaction</span>
+    </a>
 </div>
 
 {% if messages %}
+<div class="messages">
     {% for message in messages %}
-    <div style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px;">
-        {{ message }}
-    </div>
+    <div class="message">{{ message }}</div>
     {% endfor %}
+</div>
 {% endif %}
 
-<!-- Table -->
-<div class="card" style="border-radius: 8px; overflow: hidden;">
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="border-bottom: 1px solid #334155;">
-                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Contact</th>
-                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Type</th>
-                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Direction</th>
-                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Date</th>
-                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Outcome</th>
-                    <th style="padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; background-color: #0f172a;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for interaction in interactions %}
-                <tr style="border-bottom: 1px solid #334155;" onmouseover="this.style.backgroundColor='rgba(100, 116, 139, 0.1)'" onmouseout="this.style.backgroundColor=''">
-                    <td style="padding: 16px; font-size: 14px; color: #f1f5f9;">
-                        <div style="font-weight: 500;">{{ interaction.contact.contact_name }}</div>
-                        <div style="font-size: 12px; color: #94a3b8;">{{ interaction.contact.company }}</div>
-                    </td>
-                    <td style="padding: 16px; font-size: 14px; color: #cbd5e1;">{{ interaction.interaction_type }}</td>
-                    <td style="padding: 16px;">
-                        {% if interaction.direction %}
-                            {% if interaction.direction == 'inbound' %}
-                                <span class="badge" style="background-color: rgba(16, 185, 129, 0.2); color: #10b981;">Inbound</span>
-                            {% else %}
-                                <span class="badge" style="background-color: rgba(59, 130, 246, 0.2); color: #3b82f6;">Outbound</span>
-                            {% endif %}
-                        {% else %}
-                            <span style="color: #94a3b8;">—</span>
-                        {% endif %}
-                    </td>
-                    <td style="padding: 16px; font-size: 14px; color: #cbd5e1;">{{ interaction.interaction_date|date:"M d, Y H:i" }}</td>
-                    <td style="padding: 16px; font-size: 14px; color: #cbd5e1;">{{ interaction.outcome|default:"—" }}</td>
-                    <td style="padding: 16px; font-size: 14px;">
-                        <a href="{% url 'crm:interaction_update' interaction.id %}" style="color: #f59e0b; text-decoration: none; margin-right: 12px;">Edit</a>
-                        <a href="{% url 'crm:interaction_delete' interaction.id %}" style="color: #ef4444; text-decoration: none;">Delete</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" style="padding: 40px; text-align: center; color: #94a3b8;">No interactions found. <a href="{% url 'crm:interaction_create' %}" style="color: #f59e0b;">Create one</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="interactions-container">
+    <table class="interactions-table">
+        <thead>
+            <tr>
+                <th>Contact</th>
+                <th>Type</th>
+                <th>Direction</th>
+                <th>Date</th>
+                <th>Outcome</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for interaction in interactions %}
+            <tr>
+                <td>
+                    <div class="contact-info">
+                        <div class="contact-name">{{ interaction.contact.contact_name }}</div>
+                        <div class="contact-company">{{ interaction.contact.company }}</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="interaction-type">{{ interaction.interaction_type }}</span>
+                </td>
+                <td>
+                    {% if interaction.direction %}
+                        <span class="direction-badge {{ interaction.direction }}">{{ interaction.direction|capfirst }}</span>
+                    {% else %}
+                        <span style="color: #86868b;">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="interaction-date">{{ interaction.interaction_date|date:"M d, Y H:i" }}</span>
+                </td>
+                <td>
+                    <span class="outcome">{{ interaction.outcome|default:"—" }}</span>
+                </td>
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'crm:interaction_update' interaction.id %}" class="action-link">Edit</a>
+                        <a href="{% url 'crm:interaction_delete' interaction.id %}" class="action-link delete">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <div class="empty-state-text">No interactions found.</div>
+                    <a href="{% url 'crm:interaction_create' %}" class="empty-state-link">Create your first interaction →</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-
-<style>
-    .badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-</style>
-
 {% endblock %}
-

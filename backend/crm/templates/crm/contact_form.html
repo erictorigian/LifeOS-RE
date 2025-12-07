@@ -1,116 +1,251 @@
 {% extends "crm/base.html" %}
 {% block title %}{{ title }} - CRM{% endblock %}
 
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 32px;
+    }
+    
+    .page-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.02em;
+    }
+    
+    .page-subtitle {
+        font-size: 15px;
+        color: #86868b;
+        margin: 0;
+    }
+    
+    .form-container {
+        background-color: #ffffff;
+        border: 1px solid #e5e5e7;
+        border-radius: 12px;
+        padding: 32px;
+        max-width: 900px;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: #86868b;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100%;
+        padding: 10px 12px;
+        background-color: #ffffff;
+        border: 1px solid #e5e5e7;
+        border-radius: 8px;
+        color: #1d1d1f;
+        font-size: 15px;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: #1d1d1f;
+        box-shadow: 0 0 0 3px rgba(29, 29, 31, 0.1);
+    }
+    
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .error-message {
+        color: #ff3b30;
+        font-size: 13px;
+        margin-top: 6px;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e5e7;
+        margin-top: 8px;
+    }
+    
+    .btn-submit {
+        background-color: #1d1d1f;
+        color: #ffffff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        border: none;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    
+    .btn-submit:hover {
+        opacity: 0.8;
+    }
+    
+    .btn-cancel {
+        background-color: #f5f5f7;
+        color: #1d1d1f;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        text-align: center;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-cancel:hover {
+        background-color: #e5e5e7;
+    }
+    
+    .form-errors {
+        background-color: #fff3f3;
+        border: 1px solid #ffcdd2;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 24px;
+        color: #c62828;
+        font-size: 14px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-container {
+            padding: 24px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Header -->
-<div style="margin-bottom: 40px;">
-    <h2 style="margin: 0 0 8px 0; font-size: 28px; font-weight: bold; color: #f1f5f9;">{{ title }}</h2>
-    <p style="margin: 0; font-size: 14px; color: #94a3b8;">Enter contact details below</p>
+<div class="page-header">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="page-subtitle">Enter contact details below</p>
 </div>
 
-<!-- Form Card -->
-<div class="card" style="border-radius: 8px; padding: 32px; max-width: 900px;">
+<div class="form-container">
+    {% if form.non_field_errors %}
+    <div class="form-errors">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+    
     <form method="post">
         {% csrf_token %}
         
         <!-- Row 1: Company & Contact Name -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Company *</label>
-                {{ form.company }}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.company.id_for_label }}">Company *</label>
+                <input type="text" name="company" id="{{ form.company.id_for_label }}" class="form-input" value="{{ form.company.value|default:'' }}" required>
                 {% if form.company.errors %}
-                    <p style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.company.errors.0 }}</p>
+                    <div class="error-message">{{ form.company.errors.0 }}</div>
                 {% endif %}
             </div>
             
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Contact Name *</label>
-                {{ form.contact_name }}
+            <div class="form-group">
+                <label for="{{ form.contact_name.id_for_label }}">Contact Name *</label>
+                <input type="text" name="contact_name" id="{{ form.contact_name.id_for_label }}" class="form-input" value="{{ form.contact_name.value|default:'' }}" required>
                 {% if form.contact_name.errors %}
-                    <p style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.contact_name.errors.0 }}</p>
+                    <div class="error-message">{{ form.contact_name.errors.0 }}</div>
                 {% endif %}
             </div>
         </div>
 
         <!-- Row 2: Role & Email -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Role</label>
-                {{ form.role }}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.role.id_for_label }}">Role</label>
+                <input type="text" name="role" id="{{ form.role.id_for_label }}" class="form-input" value="{{ form.role.value|default:'' }}">
             </div>
             
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Email</label>
-                {{ form.email }}
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                <input type="email" name="email" id="{{ form.email.id_for_label }}" class="form-input" value="{{ form.email.value|default:'' }}">
                 {% if form.email.errors %}
-                    <p style="color: #ef4444; font-size: 12px; margin-top: 4px;">{{ form.email.errors.0 }}</p>
+                    <div class="error-message">{{ form.email.errors.0 }}</div>
                 {% endif %}
             </div>
         </div>
 
         <!-- Row 3: Phone & Source -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Phone</label>
-                {{ form.phone }}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">Phone</label>
+                <input type="text" name="phone" id="{{ form.phone.id_for_label }}" class="form-input" value="{{ form.phone.value|default:'' }}">
             </div>
             
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Source</label>
-                {{ form.source }}
+            <div class="form-group">
+                <label for="{{ form.source.id_for_label }}">Source</label>
+                <input type="text" name="source" id="{{ form.source.id_for_label }}" class="form-input" value="{{ form.source.value|default:'' }}">
             </div>
         </div>
 
         <!-- Row 4: Priority & Status -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Priority</label>
-                {{ form.priority }}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.priority.id_for_label }}">Priority</label>
+                <select name="priority" id="{{ form.priority.id_for_label }}" class="form-select">
+                    <option value="Low" {% if form.priority.value == 'Low' %}selected{% endif %}>Low</option>
+                    <option value="Med" {% if form.priority.value == 'Med' or not form.priority.value %}selected{% endif %}>Medium</option>
+                    <option value="High" {% if form.priority.value == 'High' %}selected{% endif %}>High</option>
+                </select>
             </div>
             
-            <div>
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Status</label>
-                {{ form.status }}
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                <select name="status" id="{{ form.status.id_for_label }}" class="form-select">
+                    <option value="Active" {% if form.status.value == 'Active' or not form.status.value %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if form.status.value == 'Inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="Archived" {% if form.status.value == 'Archived' %}selected{% endif %}>Archived</option>
+                </select>
             </div>
         </div>
 
         <!-- Notes -->
-        <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Notes</label>
-            {{ form.notes }}
+        <div class="form-group full-width">
+            <label for="{{ form.notes.id_for_label }}">Notes</label>
+            <textarea name="notes" id="{{ form.notes.id_for_label }}" class="form-textarea" rows="4">{{ form.notes.value|default:'' }}</textarea>
         </div>
 
         <!-- Buttons -->
-        <div style="display: flex; gap: 12px; padding-top: 16px; border-top: 1px solid #334155;">
-            <button type="submit" style="background-color: #f59e0b; color: #000; padding: 12px 24px; border-radius: 6px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">Save Contact</button>
-            <a href="{% url 'crm:contact_list' %}" style="background-color: #334155; color: #cbd5e1; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center;">Cancel</a>
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Save Contact</button>
+            <a href="{% url 'crm:contact_list' %}" class="btn-cancel">Cancel</a>
         </div>
     </form>
 </div>
-
-<style>
-    .card select, .card input[type="text"], .card input[type="email"], .card input[type="number"], .card input[type="date"], .card input[type="datetime-local"], .card textarea {
-        width: 100%;
-        padding: 10px 12px;
-        background-color: #0f172a;
-        border: 1px solid #334155;
-        border-radius: 6px;
-        color: #f1f5f9;
-        font-size: 14px;
-        transition: all 0.2s;
-        font-family: inherit;
-    }
-    
-    .card select:focus, .card input[type="text"]:focus, .card input[type="email"]:focus, .card input[type="number"]:focus, .card input[type="date"]:focus, .card input[type="datetime-local"]:focus, .card textarea:focus {
-        outline: none;
-        border-color: #f59e0b;
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-    }
-    
-    .card textarea {
-        resize: vertical;
-        min-height: 100px;
-    }
-</style>
-
 {% endblock %}
