@@ -104,31 +104,101 @@ This creates a coaching experience unlike anything traditional systems offer.
 
 Backend
 	•	Python 3
-	•	Django
-	•	Django REST Framework
-	•	Supabase (Postgres + Auth)
+	•	Django + Django REST Framework
+	•	Supabase (PostgreSQL + Auth)
+	•	Tailwind CSS for styling
+
+Frontend (Web)
+	•	Dark theme responsive UI (HTML + CSS)
+	•	Landing page with feature cards
+	•	CRM dashboard with analytics
+	•	Real-time deal management with slide-over panels
+	•	Vision and Block tracking interfaces
 
 Frontend (Future)
 	•	iOS (Swift + SwiftUI)
-	•	Vision / journal / block viewer
+	•	Native vision / journal / block viewer
 	•	AI agent integration
 
 Infrastructure
 	•	Supabase for cloud DB, auth, and edge functions
-	•	PostgreSQL for block storage
+	•	PostgreSQL for persistent storage
 	•	GitHub for version control
+	•	Django authentication system synced with Supabase
+
+⸻
+
+💼 Current Features
+
+CRM Module
+	•	Contacts: Manage companies, people, roles, and communication preferences
+	•	Deals: Track sales pipeline with stages, probability, and revenue forecasting
+	•	Interactions: Log calls, emails, meetings, proposals — every touchpoint
+	•	Dashboard: Real-time KPI metrics (Revenue MTD, Pipeline, Deal Velocity, Avg Size)
+	•	User Isolation: Multi-user support with Supabase account integration
+	•	Dark Theme UI: Professional interface with smooth animations and hover effects
+
+Visions & Blocks
+	•	Vision Management: Define your rule sets and operating principles
+	•	Block Timeline: Immutable record of every 3–5 second moment with hashes
+	•	Multi-timeline Support: Branch to new timelines when identity shifts
+
+Landing Page
+	•	Hero section with call-to-action
+	•	Feature cards highlighting CRM, Visions, and Blocks
+	•	Responsive design for mobile, tablet, and desktop
+	•	Dynamic navigation based on authentication status
+
+Authentication
+	•	Secure Django user system
+	•	Integration with Supabase accounts_user table
+	•	Login, signup, and logout flows
+	•	Per-user data isolation
 
 ⸻
 
 📂 Project Structure
 
-LifeOS-re/
+LifeOS-RE/
     backend/
         manage.py
         backend/
             settings.py
             urls.py
+            auth_utils.py
+            context_processors.py
+        crm/                          # NEW: CRM Module
+            models.py                 # Contact, Deal, Interaction
+            views.py                  # Full CRUD + Dashboard
+            forms.py                  # Model forms with styling
+            urls.py
+            admin.py
+            templates/crm/
+                base.html             # Dark sidebar layout
+                dashboard.html        # KPI cards + deals table
+                contact_*.html        # Contact CRUD pages
+                deal_*.html           # Deal CRUD pages
+                interaction_*.html    # Interaction CRUD pages
+        accounts/                     # NEW: Auth System
+            models.py                 # Custom User model
+            views.py                  # Login, signup, logout
+            forms.py                  # Auth forms
+            backends.py               # Custom auth backend
+            templates/accounts/
+        ui/                           # Landing + navigation
+            views.py
+            urls.py
+            templates/ui/
+                landing.html          # Home page
+                base.html             # Sidebar for Visions/Blocks
+                vision_list.html
+                blocks_list.html
         blocks/
+            models.py
+            serializers.py
+            views.py
+            urls.py
+        visions/
             models.py
             serializers.py
             views.py
@@ -136,31 +206,52 @@ LifeOS-re/
     supabase/
         config.toml
         schema.sql
+        add_user_id_columns.sql       # Migration script
     venv/
     README.md
 
 
 ⸻
 
-🚧 Current Status: MVP Development
+🚧 Current Status: MVP v1 — CRM Foundation
 
 Completed:
 
 ✔ Django backend scaffold
-✔ Supabase linked
-✔ Block + vision schema created
+✔ Supabase PostgreSQL linked
+✔ Block + Vision schema created
 ✔ Development server running
-✔ Repo initialized
+✔ Git repo initialized
+✔ **CRM Module (Full CRUD)**
+  ✔ Contact management (Create, Read, Update, Delete)
+  ✔ Deal management with analytics dashboard
+  ✔ Interaction tracking and logging
+  ✔ User authentication and isolation
+✔ **Authentication System**
+  ✔ Django user model synced with Supabase
+  ✔ Login/Signup pages with dark theme
+  ✔ Custom authentication backend
+✔ **Web UI (Dark Theme)**
+  ✔ Professional landing page (/)
+  ✔ CRM dashboard with KPI metrics
+  ✔ Responsive tables with hover effects
+  ✔ Slide-over detail panels
+  ✔ Dark theme throughout (#0f172a base, #f59e0b accents)
+  ✔ Glassmorphism cards and smooth transitions
+✔ **Block & Vision Management**
+  ✔ Vision listing with grid layout
+  ✔ Immutable Block timeline view
+  ✔ Cryptographic hash visualization
 
-In Progress:
+In Progress / Next:
 
-⬜ Implement Block model
-⬜ API endpoints for block creation
-⬜ Vision model + endpoints
-⬜ Supabase auth integration
-⬜ Journal integration
-⬜ AI memory module
-⬜ iOS App (SwiftUI)
+⬜ Journal integration with blocks
+⬜ AI coaching system
+⬜ Advanced analytics + reporting
+⬜ Mobile-native iOS app (Swift + SwiftUI)
+⬜ Real-time collaboration
+⬜ AI memory module (behavioral patterns)
+⬜ Vision-to-Block alignment tracking
 
 ⸻
 
