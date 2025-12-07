@@ -85,7 +85,8 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         {% if deal.next_action_due %}
-                            {% if deal.next_action_due < today %}
+                            {% now "Y-m-d" as today_str %}
+                            {% if deal.next_action_due|date:"Y-m-d" < today_str %}
                                 <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
                                     {{ deal.next_action_due|date:"M d" }} ⚠️
                                 </span>
@@ -136,8 +137,6 @@
 
 {% block extra_js %}
 <script>
-    const today = new Date('{{ today|date:"Y-m-d" }}');
-    
     function openSlideOver(dealId) {
         // Fetch deal details and populate slide-over
         fetch(`/crm/deals/${dealId}/detail/`)
@@ -169,14 +168,19 @@
                         <div>
                             <div class="text-sm text-gray-400 mb-1">Next Action</div>
                             <div class="text-sm text-white">${data.next_action || '—'}</div>
+                            ${data.next_action_due ? `<div class="text-xs text-gray-400 mt-1">Due: ${data.next_action_due}</div>` : ''}
                         </div>
-                        <div>
+                        ${data.service ? `<div>
+                            <div class="text-sm text-gray-400 mb-1">Service</div>
+                            <div class="text-sm text-white">${data.service}</div>
+                        </div>` : ''}
+                        ${data.notes ? `<div>
                             <div class="text-sm text-gray-400 mb-1">Notes</div>
-                            <div class="text-sm text-gray-300">${data.notes || '—'}</div>
-                        </div>
+                            <div class="text-sm text-gray-300">${data.notes}</div>
+                        </div>` : ''}
                         <div class="pt-4 border-t border-slate-700 flex gap-3">
-                            <a href="/crm/deals/${dealId}/update/" class="flex-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-500/30 text-center">Edit</a>
-                            <a href="/crm/deals/${dealId}/delete/" class="flex-1 bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-500/30 text-center">Delete</a>
+                            <a href="/crm/deals/${dealId}/update/" class="flex-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-500/30 text-center transition-colors">Edit</a>
+                            <a href="/crm/deals/${dealId}/delete/" class="flex-1 bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-500/30 text-center transition-colors">Delete</a>
                         </div>
                     </div>
                 `;
