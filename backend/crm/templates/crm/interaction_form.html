@@ -1,12 +1,12 @@
-{% extends "ui/base.html" %}
+{% extends "crm/base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
 <div class="mb-6">
-    <h1 class="text-3xl font-bold">{{ title }}</h1>
+    <h1 class="text-2xl font-semibold text-gray-900">{{ title }}</h1>
 </div>
 
-<div class="bg-white rounded-lg shadow p-6">
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
     <form method="post" class="space-y-6">
         {% csrf_token %}
         
@@ -48,9 +48,9 @@
             {{ form.notes }}
         </div>
         
-        <div class="flex gap-3">
-            <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition">Save</button>
-            <a href="{% url 'crm:interaction_list' %}" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition">Cancel</a>
+        <div class="flex gap-3 pt-4">
+            <button type="submit" class="bg-purple-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm">Save</button>
+            <a href="{% url 'crm:interaction_list' %}" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">Cancel</a>
         </div>
     </form>
 </div>

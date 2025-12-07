@@ -1,71 +1,79 @@
-{% extends "ui/base.html" %}
-{% block title %}CRM Dashboard{% endblock %}
+{% extends "crm/base.html" %}
+{% block title %}Dashboard - CRM{% endblock %}
 
 {% block content %}
 <!-- Header -->
-<div class="mb-12">
-    <h1 class="text-4xl font-light text-gray-900 mb-2 tracking-tight">CRM</h1>
-    <p class="text-base text-gray-500 font-light">Manage your contacts, deals, and interactions</p>
+<div class="mb-8">
+    <h1 class="text-2xl font-semibold text-gray-900 mb-2">Hello {{ user.get_full_name|default:user.username }} 👋</h1>
+    <p class="text-gray-600">Here's what's happening with your CRM today</p>
 </div>
 
-<!-- Stats Cards - Apple Style -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-    <div class="bg-white rounded-2xl border border-gray-100 p-8 hover:shadow-lg transition-all duration-300">
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                <span class="text-xl">👤</span>
+            <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                <span class="text-2xl">👤</span>
             </div>
         </div>
-        <div class="text-5xl font-light text-gray-900 mb-2 tracking-tight">{{ contacts_count }}</div>
-        <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">Contacts</div>
+        <div class="text-3xl font-bold text-gray-900 mb-1">{{ contacts_count }}</div>
+        <div class="text-sm text-gray-600 mb-1">Total Contacts</div>
+        <div class="text-xs text-green-600 font-medium">Active</div>
     </div>
     
-    <div class="bg-white rounded-2xl border border-gray-100 p-8 hover:shadow-lg transition-all duration-300">
+    <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                <span class="text-xl">💼</span>
+            <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+                <span class="text-2xl">💼</span>
             </div>
         </div>
-        <div class="text-5xl font-light text-gray-900 mb-2 tracking-tight">{{ deals_count }}</div>
-        <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">Deals</div>
+        <div class="text-3xl font-bold text-gray-900 mb-1">{{ deals_count }}</div>
+        <div class="text-sm text-gray-600 mb-1">Total Deals</div>
+        <div class="text-xs text-green-600 font-medium">In Pipeline</div>
     </div>
     
-    <div class="bg-white rounded-2xl border border-gray-100 p-8 hover:shadow-lg transition-all duration-300">
+    <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
-                <span class="text-xl">💬</span>
+            <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+                <span class="text-2xl">💬</span>
             </div>
         </div>
-        <div class="text-5xl font-light text-gray-900 mb-2 tracking-tight">{{ interactions_count }}</div>
-        <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">Interactions</div>
+        <div class="text-3xl font-bold text-gray-900 mb-1">{{ interactions_count }}</div>
+        <div class="text-sm text-gray-600 mb-1">Total Interactions</div>
+        <div class="text-xs text-green-600 font-medium">This Month</div>
     </div>
 </div>
 
-<!-- Quick Actions - Minimalist Buttons -->
-<div class="mb-12">
-    <h2 class="text-lg font-medium text-gray-900 mb-6 tracking-tight">Quick Actions</h2>
+<!-- Quick Actions -->
+<div class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+    </div>
     <div class="flex flex-wrap gap-3">
-        <a href="{% url 'crm:contact_create' %}" class="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md">
+        <a href="{% url 'crm:contact_create' %}" class="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
             <span class="mr-2">+</span>
             New Contact
         </a>
-        <a href="{% url 'crm:deal_create' %}" class="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md">
+        <a href="{% url 'crm:deal_create' %}" class="inline-flex items-center px-5 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">
             <span class="mr-2">+</span>
             New Deal
         </a>
-        <a href="{% url 'crm:interaction_create' %}" class="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md">
+        <a href="{% url 'crm:interaction_create' %}" class="inline-flex items-center px-5 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm">
             <span class="mr-2">+</span>
             New Interaction
         </a>
     </div>
 </div>
 
-<!-- Recent Items - Clean Cards -->
+<!-- Recent Items -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <!-- Recent Contacts -->
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h3 class="text-base font-semibold text-gray-900 tracking-tight">Recent Contacts</h3>
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-semibold text-gray-900">Recent Contacts</h3>
+                <a href="{% url 'crm:contact_list' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View all</a>
+            </div>
         </div>
         <div class="p-6">
             {% if recent_contacts %}
@@ -74,28 +82,28 @@
                     <li class="flex items-center justify-between group">
                         <div class="flex-1 min-w-0">
                             <div class="text-sm font-medium text-gray-900 truncate">{{ contact.contact_name }}</div>
-                            <div class="text-xs text-gray-500 mt-0.5 truncate">{{ contact.company }}</div>
+                            <div class="text-xs text-gray-500 mt-1 truncate">{{ contact.company }}</div>
                         </div>
-                        <a href="{% url 'crm:contact_update' contact.id %}" class="ml-4 text-xs text-gray-400 hover:text-gray-900 transition-colors opacity-0 group-hover:opacity-100">Edit</a>
+                        <a href="{% url 'crm:contact_update' contact.id %}" class="ml-4 text-xs text-blue-600 hover:text-blue-700 font-medium">Edit</a>
                     </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="text-sm text-gray-400 text-center py-8">No contacts yet</p>
+                <div class="text-center py-8">
+                    <p class="text-sm text-gray-400 mb-4">No contacts yet</p>
+                    <a href="{% url 'crm:contact_create' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Create your first contact</a>
+                </div>
             {% endif %}
-            <div class="mt-6 pt-6 border-t border-gray-100">
-                <a href="{% url 'crm:contact_list' %}" class="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center">
-                    View all
-                    <span class="ml-1">→</span>
-                </a>
-            </div>
         </div>
     </div>
 
     <!-- Recent Deals -->
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h3 class="text-base font-semibold text-gray-900 tracking-tight">Recent Deals</h3>
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-semibold text-gray-900">Recent Deals</h3>
+                <a href="{% url 'crm:deal_list' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View all</a>
+            </div>
         </div>
         <div class="p-6">
             {% if recent_deals %}
@@ -104,28 +112,28 @@
                     <li class="flex items-center justify-between group">
                         <div class="flex-1 min-w-0">
                             <div class="text-sm font-medium text-gray-900 truncate">{{ deal.contact.company }}</div>
-                            <div class="text-xs text-gray-500 mt-0.5 truncate">{{ deal.deal_stage }}</div>
+                            <div class="text-xs text-gray-500 mt-1 truncate">{{ deal.deal_stage }}</div>
                         </div>
-                        <a href="{% url 'crm:deal_update' deal.id %}" class="ml-4 text-xs text-gray-400 hover:text-gray-900 transition-colors opacity-0 group-hover:opacity-100">Edit</a>
+                        <a href="{% url 'crm:deal_update' deal.id %}" class="ml-4 text-xs text-blue-600 hover:text-blue-700 font-medium">Edit</a>
                     </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="text-sm text-gray-400 text-center py-8">No deals yet</p>
+                <div class="text-center py-8">
+                    <p class="text-sm text-gray-400 mb-4">No deals yet</p>
+                    <a href="{% url 'crm:deal_create' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Create your first deal</a>
+                </div>
             {% endif %}
-            <div class="mt-6 pt-6 border-t border-gray-100">
-                <a href="{% url 'crm:deal_list' %}" class="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center">
-                    View all
-                    <span class="ml-1">→</span>
-                </a>
-            </div>
         </div>
     </div>
 
     <!-- Recent Interactions -->
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-100">
-            <h3 class="text-base font-semibold text-gray-900 tracking-tight">Recent Interactions</h3>
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-semibold text-gray-900">Recent Interactions</h3>
+                <a href="{% url 'crm:interaction_list' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View all</a>
+            </div>
         </div>
         <div class="p-6">
             {% if recent_interactions %}
@@ -134,23 +142,19 @@
                     <li class="flex items-center justify-between group">
                         <div class="flex-1 min-w-0">
                             <div class="text-sm font-medium text-gray-900 truncate">{{ interaction.contact.contact_name }}</div>
-                            <div class="text-xs text-gray-500 mt-0.5 truncate">{{ interaction.interaction_type }}</div>
+                            <div class="text-xs text-gray-500 mt-1 truncate">{{ interaction.interaction_type }}</div>
                         </div>
-                        <a href="{% url 'crm:interaction_update' interaction.id %}" class="ml-4 text-xs text-gray-400 hover:text-gray-900 transition-colors opacity-0 group-hover:opacity-100">Edit</a>
+                        <a href="{% url 'crm:interaction_update' interaction.id %}" class="ml-4 text-xs text-blue-600 hover:text-blue-700 font-medium">Edit</a>
                     </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="text-sm text-gray-400 text-center py-8">No interactions yet</p>
+                <div class="text-center py-8">
+                    <p class="text-sm text-gray-400 mb-4">No interactions yet</p>
+                    <a href="{% url 'crm:interaction_create' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Create your first interaction</a>
+                </div>
             {% endif %}
-            <div class="mt-6 pt-6 border-t border-gray-100">
-                <a href="{% url 'crm:interaction_list' %}" class="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center">
-                    View all
-                    <span class="ml-1">→</span>
-                </a>
-            </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
